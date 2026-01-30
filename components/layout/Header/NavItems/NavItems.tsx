@@ -5,6 +5,8 @@ import { usePathname } from 'next/navigation'
 
 import { NAV_ITEMS } from '@/shared/const/navigation'
 
+// type NavItemsProps = {}
+
 export default function NavItems() {
   const pathname = usePathname()
 
