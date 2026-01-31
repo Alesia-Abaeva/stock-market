@@ -1,5 +1,10 @@
 import { TradingView } from '@/components/widgets/TradingView'
-import { MARKET_OVERVIEW_WIDGET_CONFIG } from '@/shared/const/trading'
+import {
+  HEATMAP_WIDGET_CONFIG,
+  MARKET_DATA_WIDGET_CONFIG,
+  MARKET_OVERVIEW_WIDGET_CONFIG,
+  TOP_STORIES_WIDGET_CONFIG,
+} from '@/shared/const/trading'
 
 export default function Home() {
   const scriptUrl = `https://s3.tradingview.com/external-embedding/embed-widget-`
@@ -14,7 +19,36 @@ export default function Home() {
             className="custom-chart"
             height={600}
           />
-        </div>{' '}
+        </div>
+
+        <div className="md:col-span-1 lg:col-span-2">
+          <TradingView
+            title="Stock Heatmap"
+            scriptUrl={`${scriptUrl}stock-heatmap.js`}
+            config={HEATMAP_WIDGET_CONFIG}
+            height={600}
+          />
+        </div>
+      </section>
+      <section className="grid w-full gap-8 home-section">
+        <div className="h-full md:col-span-1 xl:col-span-1">
+          <TradingView
+            title="Timeline"
+            scriptUrl={`${scriptUrl}timeline.js`}
+            config={TOP_STORIES_WIDGET_CONFIG}
+            className="custom-chart"
+            height={600}
+          />
+        </div>
+
+        <div className="h-full md:col-span-1 xl:col-span-2">
+          <TradingView
+            title="Market Quotes"
+            scriptUrl={`${scriptUrl}market-quotes.js`}
+            config={MARKET_DATA_WIDGET_CONFIG}
+            height={600}
+          />
+        </div>
       </section>
     </div>
   )
