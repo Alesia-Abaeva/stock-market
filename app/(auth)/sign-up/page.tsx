@@ -3,7 +3,12 @@
 import { useForm } from 'react-hook-form'
 
 import { Button } from '@/components/ui'
-import { InputField } from '@/components/widgets/Forms'
+import { CountrySelectField, InputField, SelectField } from '@/components/widgets/Forms'
+import {
+  INVESTMENT_GOALS,
+  PREFERRED_INDUSTRIES,
+  RISK_TOLERANCE_OPTIONS,
+} from '@/shared/const/optionts'
 import type { SignUpFormData } from '@/shared/types/global'
 
 export default function SignUp() {
@@ -33,7 +38,7 @@ export default function SignUp() {
   }
 
   return (
-    <div className="flex min-h-screen  home-wrapper">
+    <>
       <h1 className="form-title">Sign Up & Personalize</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -65,11 +70,46 @@ export default function SignUp() {
           error={errors.password}
           validation={{ required: 'Password is required', minLength: 8 }}
         />
+        <CountrySelectField
+          name="country"
+          label="Country"
+          control={control}
+          error={errors.country}
+          required
+        />
 
+        <SelectField
+          name="investmentGoals"
+          label="Investment Goals"
+          placeholder="Select your investment goals"
+          error={errors.investmentGoals}
+          options={INVESTMENT_GOALS}
+          control={control}
+          required
+        />
+        <SelectField
+          name="riskTolerance"
+          label="Risk Tolerance"
+          placeholder="Select your risk level"
+          options={RISK_TOLERANCE_OPTIONS}
+          control={control}
+          error={errors.riskTolerance}
+          required
+        />
+
+        <SelectField
+          name="preferredIndustry"
+          label="Preferred Industry"
+          placeholder="Select your preferred industry"
+          options={PREFERRED_INDUSTRIES}
+          control={control}
+          error={errors.preferredIndustry}
+          required
+        />
         <Button type="submit" className="yellow-btn w-full mt-5">
           {isSubmitted ? 'Creating account' : 'Start Your Investing Journey'}
         </Button>
       </form>
-    </div>
+    </>
   )
 }

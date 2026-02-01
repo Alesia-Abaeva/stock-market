@@ -1,6 +1,8 @@
 export * from './avatar'
 export { Button, buttonVariants } from './button'
+export * from './command'
 export * from './dropdown-menu'
 export * from './input'
 export * from './label'
+export * from './popover'
 export * from './select'
