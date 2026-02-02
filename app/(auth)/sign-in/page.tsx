@@ -1,7 +1,63 @@
+'use client'
+
+import { useForm } from 'react-hook-form'
+
+import { Button } from '@/components/ui'
+import { FooterLink, InputField } from '@/components/widgets/Forms'
+import { SignInFormData } from '@/shared/types/global'
+
 export default function SignIn() {
+  const defaultValues = {
+    email: '',
+    password: '',
+  }
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitted },
+  } = useForm<SignInFormData>({ defaultValues, mode: 'onBlur' })
+
+  const onSubmit = async (data: SignInFormData) => {
+    try {
+      console.log(data)
+    } catch (e) {
+      console.error(e)
+    }
+  }
+
   return (
-    <div className="flex min-h-screen  home-wrapper">
-      <section className="grid w-full gap-8 home-section">SignIn</section>
-    </div>
+    <>
+      <h1 className="form-title">Log In Your Account </h1>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <InputField
+          label="Email"
+          name="email"
+          placeholder="Jojo@jojo.com"
+          register={register}
+          error={errors.email}
+          validation={{
+            required: 'Email name is required',
+            pattern: /^\w+@\w+\.\w+$/,
+          }}
+        />
+        <InputField
+          name="password"
+          label="Password"
+          placeholder="Enter a strong password"
+          type="password"
+          register={register}
+          error={errors.password}
+          validation={{ required: 'Password is required', minLength: 8 }}
+        />
+
+        <Button type="submit" className="yellow-btn w-full mt-5">
+          {isSubmitted ? 'Creating account' : 'Log In'}
+        </Button>
+
+        <FooterLink text="Don’t have an account? " linkText=" Sign Up" href="/sign-up" />
+      </form>
+    </>
   )
 }
