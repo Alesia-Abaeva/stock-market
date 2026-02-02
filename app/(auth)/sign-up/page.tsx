@@ -3,7 +3,7 @@
 import { useForm } from 'react-hook-form'
 
 import { Button } from '@/components/ui'
-import { CountrySelectField, InputField, SelectField } from '@/components/widgets/Forms'
+import { CountrySelectField, FooterLink, InputField, SelectField } from '@/components/widgets/Forms'
 import {
   INVESTMENT_GOALS,
   PREFERRED_INDUSTRIES,
@@ -109,6 +109,8 @@ export default function SignUp() {
         <Button type="submit" className="yellow-btn w-full mt-5">
           {isSubmitted ? 'Creating account' : 'Start Your Investing Journey'}
         </Button>
+
+        <FooterLink text="Already have an account?" linkText="Sign in" href="/sign-in" />
       </form>
     </>
   )
