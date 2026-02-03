@@ -28,7 +28,7 @@ export default function SignIn() {
 
   return (
     <>
-      <h1 className="form-title">Log In Your Account </h1>
+      <h1 className="form-title">Log In Your Account</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <InputField
@@ -53,7 +53,7 @@ export default function SignIn() {
         />
 
         <Button type="submit" className="yellow-btn w-full mt-5">
-          {isSubmitted ? 'Creating account' : 'Log In'}
+          {isSubmitted ? 'Signing In' : 'Log In'}
         </Button>
 
         <FooterLink text="Don’t have an account? " linkText=" Sign Up" href="/sign-up" />
