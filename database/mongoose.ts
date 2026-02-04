@@ -33,4 +33,6 @@ export const connectToDataBase = async () => {
   }
 
   console.log(`Connect to database ${process.env.NODE_ENV} - ${MONGODB_URL}`)
+
+  return cached.conn
 }
