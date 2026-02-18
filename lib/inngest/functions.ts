@@ -2,6 +2,10 @@ import { inngest } from '@/lib/inngest/client'
 import { PERSONALIZED_WELCOME_EMAIL_PROMPT } from '@/lib/inngest/prompts'
 import { sendWelcomeEmail } from '@/lib/nodemailer'
 
+export const USER_EVENT = {
+  CREATE: 'app/user.created',
+}
+
 export const sendSignUpEmail = inngest.createFunction(
   { id: 'sign-up-email' },
   { event: 'app/user.created' },

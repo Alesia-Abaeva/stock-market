@@ -1,9 +1,12 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 
 import { Button } from '@/components/ui'
 import { CountrySelectField, FooterLink, InputField, SelectField } from '@/components/widgets/Forms'
+import { signUpWithEmailActions } from '@/lib/actions/auth.actions'
 import {
   INVESTMENT_GOALS,
   PREFERRED_INDUSTRIES,
@@ -22,6 +25,8 @@ export default function SignUp() {
     preferredIndustry: 'Technology',
   }
 
+  const router = useRouter()
+
   const {
     register,
     handleSubmit,
@@ -29,11 +34,26 @@ export default function SignUp() {
     formState: { errors, isSubmitted },
   } = useForm<SignUpFormData>({ defaultValues, mode: 'onBlur' })
 
+  console.log('Form errors:', errors)
+
   const onSubmit = async (data: SignUpFormData) => {
     try {
-      console.log(data)
+      const result = await signUpWithEmailActions(data)
+
+      console.log('Sign-up result:', result)
+
+      if (result.success) {
+        router.push('/') // Redirect to dashboard after successful sign-up
+        // You can add any additional logic here, such as redirecting the user or showing a success message
+        console.log('Sign-up successful:', result.data)
+      } else {
+        toast.error(result.error || 'An error occurred during sign-up. Please try again later.')
+      }
     } catch (e) {
       console.error(e)
+      toast.error('An error occurred during sign-up. Please try again later.', {
+        description: e instanceof Error ? e.message : 'Unknown error',
+      })
     }
   }
 
@@ -48,7 +68,10 @@ export default function SignUp() {
           placeholder="Jojo"
           register={register}
           error={errors.fullName}
-          validation={{ required: 'Full Name is required', minLength: 2 }}
+          validation={{
+            required: 'Full Name is required',
+            minLength: { value: 2, message: 'Name must be at least 2 characters' },
+          }}
         />
         <InputField
           label="Email"
@@ -58,7 +81,10 @@ export default function SignUp() {
           error={errors.email}
           validation={{
             required: 'Email name is required',
-            pattern: /^\w+@\w+\.\w+$/,
+            pattern: {
+              value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+              message: 'Invalid email address',
+            },
           }}
         />
         <InputField
@@ -68,7 +94,13 @@ export default function SignUp() {
           type="password"
           register={register}
           error={errors.password}
-          validation={{ required: 'Password is required', minLength: 8 }}
+          validation={{
+            required: 'Password is required',
+            minLength: {
+              value: 8,
+              message: 'Password must be at least 8 characters',
+            },
+          }}
         />
         <CountrySelectField
           name="country"

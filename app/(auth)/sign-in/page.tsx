@@ -39,7 +39,10 @@ export default function SignIn() {
           error={errors.email}
           validation={{
             required: 'Email name is required',
-            pattern: /^\w+@\w+\.\w+$/,
+            pattern: {
+              value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+              message: 'Invalid email address',
+            },
           }}
         />
         <InputField
@@ -49,7 +52,13 @@ export default function SignIn() {
           type="password"
           register={register}
           error={errors.password}
-          validation={{ required: 'Password is required', minLength: 8 }}
+          validation={{
+            required: 'Password is required',
+            minLength: {
+              value: 8,
+              message: 'Password must be at least 8 characters',
+            },
+          }}
         />
 
         <Button type="submit" className="yellow-btn w-full mt-5">
