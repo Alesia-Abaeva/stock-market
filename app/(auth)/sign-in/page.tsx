@@ -1,9 +1,12 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 
 import { Button } from '@/components/ui'
 import { FooterLink, InputField } from '@/components/widgets/Forms'
+import { signInWithEmailActions } from '@/lib/actions/auth.actions'
 import { SignInFormData } from '@/shared/types/global'
 
 export default function SignIn() {
@@ -11,6 +14,8 @@ export default function SignIn() {
     email: '',
     password: '',
   }
+
+  const router = useRouter()
 
   const {
     register,
@@ -20,6 +25,18 @@ export default function SignIn() {
 
   const onSubmit = async (data: SignInFormData) => {
     try {
+      const result = await signInWithEmailActions(data)
+
+      console.log('Sign-in result:', result)
+
+      if (result.success) {
+        router.push('/') // Redirect to dashboard after successful sign-up
+        // You can add any additional logic here, such as redirecting the user or showing a success message
+        console.log('Sign-in successful:', result.data)
+      } else {
+        toast.error(result.error || 'An error occurred during sign-in. Please try again later.')
+      }
+
       console.log(data)
     } catch (e) {
       console.error(e)

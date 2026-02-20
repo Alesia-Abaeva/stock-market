@@ -15,18 +15,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui'
+import { signOutAction } from '@/lib/actions/auth.actions'
+import { User } from '@/shared/types/global'
 
 import { NavItems } from '../NavItems'
 
-const user = {
-  name: 'Jojo',
-  email: 'jojo@jojo.com',
+type UserDropDownProps = {
+  user: User
 }
 
-export default function UserDropDown() {
+export default function UserDropDown({ user }: UserDropDownProps) {
   const router = useRouter()
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
+    await signOutAction()
     router.push('/sign-in')
   }
 
