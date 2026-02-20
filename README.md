@@ -4,6 +4,7 @@ A modern, AI-powered stock market tracking application aimed at helping users ma
 
 ## 📋 Table of Contents
 
+
 - [Signalist (Stock Market App)](#signalist-stock-market-app)
   - [📋 Table of Contents](#-table-of-contents)
   - [🚀 Features](#-features)
@@ -14,6 +15,8 @@ A modern, AI-powered stock market tracking application aimed at helping users ma
     - [Running the Application](#running-the-application)
   - [⚙️ Tech Stack](#️-tech-stack)
   - [⚙️ Daily news summary workflow](#️-daily-news-summary-workflow)
+
+
 
 ## <a name="features">🚀 Features</a>
 
@@ -106,5 +109,5 @@ A modern, AI-powered stock market tracking application aimed at helping users ma
 
 - **[TypeScript](https://www.typescriptlang.org/)** is a statically typed superset of JavaScript that improves code quality, tooling, and error detection. It is ideal for building large-scale applications and enhances maintainability.
 
-## <a name="workflow">⚙️ Daily news summary workflow</a>
+## <a name="daily-news-summary-workflow">⚙️ Daily news summary workflow</a>
 ![alt text](image.png)
