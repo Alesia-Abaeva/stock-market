@@ -16,15 +16,16 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui'
 import { signOutAction } from '@/lib/actions/auth.actions'
-import { User } from '@/shared/types/global'
+import { StockWithWatchlistStatus, User } from '@/shared/types/global'
 
 import { NavItems } from '../NavItems'
 
 type UserDropDownProps = {
   user: User
+  initialStocks: StockWithWatchlistStatus[]
 }
 
-export default function UserDropDown({ user }: UserDropDownProps) {
+export default function UserDropDown({ user, initialStocks }: UserDropDownProps) {
   const router = useRouter()
 
   const handleSignOut = async () => {
@@ -75,7 +76,7 @@ export default function UserDropDown({ user }: UserDropDownProps) {
         </DropdownMenuItem>
         <DropdownMenuSeparator className="hidden sm:block bg-gray-600" />
         <nav className="sm:hidden">
-          <NavItems />
+          <NavItems initialStocks={initialStocks} />
         </nav>
       </DropdownMenuContent>
     </DropdownMenu>
