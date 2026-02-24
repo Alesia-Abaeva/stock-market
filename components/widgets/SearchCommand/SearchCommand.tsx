@@ -1,11 +1,13 @@
 'use client'
 
-import { Loader2, TrendingUp } from 'lucide-react'
+import { Loader2, Star, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
 
 import { Button } from '@/components/ui'
 import { CommandDialog, CommandEmpty, CommandInput, CommandList } from '@/components/ui/command'
+import { searchStocks } from '@/lib/actions/finnhub.actions'
+import { useDebounce } from '@/shared/hooks/use-debouns'
 import { StockWithWatchlistStatus } from '@/shared/types/global'
 
 export type SearchCommandProps = {
@@ -26,9 +28,9 @@ export function SearchCommand({
   const [loading, setLoading] = React.useState(false)
   const [stock, setStock] = React.useState<StockWithWatchlistStatus[]>(initialStocks)
 
-  const inSearchMode = !!searchTerm.trim()
+  const isSearchMode = !!searchTerm.trim()
 
-  const displayStocks = inSearchMode ? stock : stock?.slice(0, NUMBER_OF_STOCKS_TO_SHOW)
+  const displayStocks = isSearchMode ? stock : stock?.slice(0, NUMBER_OF_STOCKS_TO_SHOW)
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -45,7 +47,34 @@ export function SearchCommand({
   const handleSelectStock = (stock: string) => {
     console.log(`Selected stock: ${stock}`)
     setOpen(false)
+    setSearchTerm('')
+
+    setStock(initialStocks)
   }
+
+  const handleSearch = async () => {
+    if (!isSearchMode) return setStock(initialStocks)
+
+    setLoading(true)
+
+    try {
+      const res = await searchStocks(searchTerm.trim())
+
+      setStock(res)
+    } catch (e) {
+      console.error('Error searching stocks:', e)
+      setStock([])
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const debouncedSearch = useDebounce(handleSearch, 300)
+
+  React.useEffect(() => {
+    debouncedSearch()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchTerm])
 
   return (
     <>
@@ -74,16 +103,16 @@ export function SearchCommand({
           ) : displayStocks.length === 0 ? (
             <div className="search-list-indicator">
               <CommandEmpty className="search-list-empty">
-                {inSearchMode ? 'Start typing to search stocks...' : 'No stocks found.'}
+                {isSearchMode ? 'Start typing to search stocks...' : 'No stocks found.'}
               </CommandEmpty>
             </div>
           ) : (
             <ul>
               <div className="search-count">
-                {inSearchMode ? 'Search results:' : 'Top stocks:'}
+                {isSearchMode ? 'Search results: ' : 'Top stocks: '}
                 {displayStocks.length || NUMBER_OF_STOCKS_TO_SHOW}
               </div>
-              {displayStocks.map((stock, i) => (
+              {displayStocks.map((stock) => (
                 <li key={stock.symbol} className="search-item">
                   <Link
                     href={`/stocks/${stock.symbol}`}
@@ -93,10 +122,12 @@ export function SearchCommand({
                     <TrendingUp className="h-4 w-4 text-gray-500" />
                     <div className="flex-1">
                       <div className="search-item-name">{stock.name}</div>
+
+                      <div className="text-sm text-gray-500">
+                        {stock.symbol} | {stock.exchange} | {stock.type}
+                      </div>
                     </div>
-                    <div className="text-sm text-gray-500">
-                      {stock.symbol} | {stock.exchange} | {stock.type}
-                    </div>
+                    {/* <Star className="h-5 w-5" /> */}
                   </Link>
                 </li>
               ))}

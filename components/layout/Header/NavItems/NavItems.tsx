@@ -5,8 +5,13 @@ import { usePathname } from 'next/navigation'
 
 import { SearchCommand } from '@/components/widgets/SearchCommand'
 import { NAV_ITEMS } from '@/shared/const/navigation'
+import { StockWithWatchlistStatus } from '@/shared/types/global'
 
-export default function NavItems() {
+type NavItemsProps = {
+  initialStocks: StockWithWatchlistStatus[]
+}
+
+export default function NavItems({ initialStocks }: NavItemsProps) {
   const pathname = usePathname()
 
   const isActive = (path: string) => {
@@ -19,7 +24,7 @@ export default function NavItems() {
         if (label === 'Search') {
           return (
             <li key="search-trigger">
-              <SearchCommand renderAs="text" label={label} initialStocks={[]} />
+              <SearchCommand renderAs="text" label={label} initialStocks={initialStocks} />
             </li>
           )
         }
