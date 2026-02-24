@@ -100,7 +100,7 @@ export function SearchCommand({
         <CommandList className="search-list">
           {loading ? (
             <CommandEmpty className="search-list-empty">Loading stocks...</CommandEmpty>
-          ) : displayStocks.length === 0 ? (
+          ) : displayStocks?.length === 0 ? (
             <div className="search-list-indicator">
               <CommandEmpty className="search-list-empty">
                 {isSearchMode ? 'Start typing to search stocks...' : 'No stocks found.'}
@@ -110,9 +110,9 @@ export function SearchCommand({
             <ul>
               <div className="search-count">
                 {isSearchMode ? 'Search results: ' : 'Top stocks: '}
-                {displayStocks.length || NUMBER_OF_STOCKS_TO_SHOW}
+                {displayStocks?.length || NUMBER_OF_STOCKS_TO_SHOW}
               </div>
-              {displayStocks.map((stock) => (
+              {displayStocks?.map((stock) => (
                 <li key={stock.symbol} className="search-item">
                   <Link
                     href={`/stocks/${stock.symbol}`}
