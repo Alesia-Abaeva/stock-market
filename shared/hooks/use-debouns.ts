@@ -2,14 +2,15 @@
 
 import React, { useCallback } from 'react'
 
-export function useDebounce(callback: () => void, delay: number) {
-  // eslint-disable-next-line no-undef
-  const timeOutRef = React.useRef<NodeJS.Timeout | null>(null)
+export function useDebounce(callback: () => void | Promise<void>, delay: number) {
+  const timeOutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
 
   return useCallback(() => {
     if (timeOutRef.current) {
       clearTimeout(timeOutRef.current)
     }
-    timeOutRef.current = setTimeout(callback, delay)
+    timeOutRef.current = setTimeout(() => {
+      void callback()
+    }, delay)
   }, [callback, delay])
 }
