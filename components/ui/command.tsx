@@ -138,6 +138,13 @@ function CommandItem({ className, ...props }: React.ComponentProps<typeof Comman
   )
 }
 
+function CommandLoading({
+  className,
+  ...props
+}: React.ComponentProps<typeof CommandPrimitive.Loading>) {
+  return <CommandPrimitive.Loading data-slot="command-loading" className={className} {...props} />
+}
+
 function CommandShortcut({ className, ...props }: React.ComponentProps<'span'>) {
   return (
     <span
@@ -156,6 +163,7 @@ export {
   CommandInput,
   CommandItem,
   CommandList,
+  CommandLoading,
   CommandSeparator,
   CommandShortcut,
 }

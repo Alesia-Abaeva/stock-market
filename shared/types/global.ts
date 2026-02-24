@@ -63,12 +63,6 @@ export type FooterLinkProps = {
   href: string
 }
 
-export type TSearchCommandProps = {
-  renderAs?: 'button' | 'text'
-  label?: string
-  initialStocks: StockWithWatchlistStatus[]
-}
-
 export type WelcomeEmailData = {
   email: string
   name: string

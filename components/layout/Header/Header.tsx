@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 
+import { searchStocks } from '@/lib/actions/finnhub.actions'
 import { User } from '@/shared/types/global'
 
 import { NavItems } from './NavItems'
@@ -10,7 +11,9 @@ type HeaderProps = {
   user?: User
 }
 
-export default function Header({ user }: HeaderProps) {
+export default async function Header({ user }: HeaderProps) {
+  const initialStocks = await searchStocks()
+
   return (
     <header className="sticky top-0 header">
       <div className="container header-wrapper">
@@ -19,7 +22,7 @@ export default function Header({ user }: HeaderProps) {
         </Link>
 
         <nav className="hidden sm:block">
-          <NavItems />
+          <NavItems initialStocks={initialStocks} />
         </nav>
         {user && <UserDropDown user={user} />}
       </div>
