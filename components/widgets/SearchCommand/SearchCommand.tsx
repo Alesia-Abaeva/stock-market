@@ -1,6 +1,6 @@
 'use client'
 
-import { Loader2, Star, TrendingUp } from 'lucide-react'
+import { Loader2, TrendingUp } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
 
@@ -10,10 +10,13 @@ import { searchStocks } from '@/lib/actions/finnhub.actions'
 import { useDebounce } from '@/shared/hooks/use-debouns'
 import { StockWithWatchlistStatus } from '@/shared/types/global'
 
+import { WatchlistButton } from '../Watchlist'
+
 export type SearchCommandProps = {
   renderAs?: 'button' | 'text'
   label?: string
   initialStocks: StockWithWatchlistStatus[]
+  watchlistSymbols: string[]
 }
 
 const NUMBER_OF_STOCKS_TO_SHOW = 10
@@ -22,6 +25,7 @@ export function SearchCommand({
   renderAs = 'button',
   label = 'Add stock',
   initialStocks,
+  watchlistSymbols,
 }: SearchCommandProps) {
   const [open, setOpen] = React.useState(false)
   const [searchTerm, setSearchTerm] = React.useState('')
@@ -58,7 +62,7 @@ export function SearchCommand({
     setLoading(true)
 
     try {
-      const res = await searchStocks(searchTerm.trim())
+      const res = await searchStocks({ query: searchTerm.trim(), watchlistSymbols })
 
       setStock(res)
     } catch (e) {
@@ -73,6 +77,7 @@ export function SearchCommand({
 
   React.useEffect(() => {
     debouncedSearch()
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchTerm])
 
@@ -127,7 +132,11 @@ export function SearchCommand({
                         {stock.symbol} | {stock.exchange} | {stock.type}
                       </div>
                     </div>
-                    {/* <Star className="h-5 w-5" /> */}
+                    <WatchlistButton
+                      symbol={stock.symbol}
+                      variant="icon"
+                      isActive={stock.isInWatchlist}
+                    />
                   </Link>
                 </li>
               ))}

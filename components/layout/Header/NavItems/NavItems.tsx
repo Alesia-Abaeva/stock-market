@@ -9,9 +9,10 @@ import { StockWithWatchlistStatus } from '@/shared/types/global'
 
 type NavItemsProps = {
   initialStocks: StockWithWatchlistStatus[]
+  watchlistSymbols: string[]
 }
 
-export default function NavItems({ initialStocks }: NavItemsProps) {
+export default function NavItems({ initialStocks, watchlistSymbols }: NavItemsProps) {
   const pathname = usePathname()
 
   const isActive = (path: string) => {
@@ -24,7 +25,12 @@ export default function NavItems({ initialStocks }: NavItemsProps) {
         if (href === '/search') {
           return (
             <li key="search-trigger">
-              <SearchCommand renderAs="text" label={label} initialStocks={initialStocks} />
+              <SearchCommand
+                renderAs="text"
+                label={label}
+                initialStocks={initialStocks}
+                watchlistSymbols={watchlistSymbols}
+              />
             </li>
           )
         }

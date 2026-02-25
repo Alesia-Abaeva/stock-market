@@ -5,7 +5,6 @@ import {
   COMPANY_FINANCIALS_WIDGET_CONFIG,
   COMPANY_PROFILE_WIDGET_CONFIG,
   GET_WATCH_LIST_WIDGET_CONFIG,
-  SYMBOL_INFO_WIDGET_CONFIG,
 } from '@/shared/const/trading'
 
 export default async function Wishlist() {

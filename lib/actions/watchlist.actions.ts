@@ -3,7 +3,7 @@
 import { Watchlist } from '@/database/models/watchlist.model'
 import { connectToDataBase } from '@/database/mongoose'
 
-export async function getWatchlistSymbolsByEmail(email: string): Promise<string[]> {
+export async function getWatchlistSymbolsByEmail(email?: string): Promise<string[]> {
   if (!email) return []
 
   try {
