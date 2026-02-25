@@ -28,3 +28,47 @@ export async function getWatchlistSymbolsByEmail(email: string): Promise<string[
     return []
   }
 }
+
+export async function addToWatchList(
+  email: string,
+  symbol: string,
+  company: string
+): Promise<{ success: boolean; message: string }> {
+  if (!email || !symbol || !company) {
+    return { success: false, message: 'Missing require fields' }
+  }
+
+  try {
+    const mongoose = await connectToDataBase()
+    const db = mongoose?.connection.db
+
+    if (!db) throw new Error('MongoDB connection not found')
+
+    const user = await db.collection('user').findOne<{ id?: string; _id?: unknown }>({ email })
+
+    if (!user) return { success: false, message: 'User not found' }
+
+    const userId = (user.id as string) || String(user._id || '')
+
+    if (!userId) {
+      return { success: false, message: 'User ID not found' }
+    }
+
+    // Check if already in watchlist
+    const existing = await Watchlist.findOne({ userId, symbol: symbol.toUpperCase() })
+    if (existing) {
+      return { success: false, message: 'Stock already in watchlist' }
+    }
+
+    await Watchlist.create({
+      userId,
+      symbol: symbol.toUpperCase(),
+      company,
+    })
+
+    return { success: true, message: 'Added to watchlist' }
+  } catch (err) {
+    console.error('addToWatchList error:', err)
+    return { success: false, message: 'Failed to add to watchlist' }
+  }
+}
