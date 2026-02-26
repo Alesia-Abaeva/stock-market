@@ -5,7 +5,7 @@ import React from 'react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
-import { addToWatchList } from '@/lib/actions/watchlist.actions'
+import { addToWatchList, removeFromWatchList } from '@/lib/actions/watchlist.actions'
 import { useUser } from '@/shared/providers/UserProvider'
 
 type WatchlistButtonProps = {
@@ -29,7 +29,28 @@ const WatchlistButton = ({ symbol, variant = 'button', isActive }: WatchlistButt
       return
     }
 
+    if (isActive) {
+      setIsAdding(false)
+
+      try {
+        const result = await removeFromWatchList(user.email, symbol, symbol)
+        if (result.success) {
+          toast.success(result.message)
+        } else {
+          toast.error(result.message)
+          setIsAdding(true)
+        }
+      } catch (e) {
+        console.error(e)
+        toast.error('Failed to remove from watchlist')
+        setIsAdding(true)
+      }
+
+      return
+    }
+
     setIsAdding(true)
+
     try {
       const result = await addToWatchList(user.email, symbol, symbol)
       if (result.success) {
