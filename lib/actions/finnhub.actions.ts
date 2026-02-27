@@ -122,26 +122,25 @@ export async function getNews(symbols?: string[]): Promise<MarketNewsArticle[]> 
   }
 }
 
+type SearchStocksParams = {
+  query?: string
+  watchlistSymbols?: string[]
+} | null
+
 export const searchStocks = cache(
-  async ({
-    query,
-    watchlistSymbols,
-  }: {
-    query?: string
-    watchlistSymbols?: string[]
-  }): Promise<StockWithWatchlistStatus[]> => {
+  async (param: SearchStocksParams): Promise<StockWithWatchlistStatus[]> => {
     try {
       const token = NEXT_PUBLIC_FINNHUB_API_KEY
       const results: StockWithWatchlistStatus[] = []
       let userWatchlistSymbols: Set<string> = new Set()
 
-      if (watchlistSymbols) {
-        userWatchlistSymbols = new Set(watchlistSymbols)
+      if (param?.watchlistSymbols) {
+        userWatchlistSymbols = new Set(param.watchlistSymbols)
       }
 
       console.log('User watchlist symbols:', userWatchlistSymbols)
 
-      if (!query) {
+      if (!param?.query) {
         // 1. No query -> fetch top popular symbols
         // We'll limit to first 10 for performance
         const topSymbols = POPULAR_STOCK_SYMBOLS.slice(0, 10)
@@ -178,7 +177,7 @@ export const searchStocks = cache(
         )
       } else {
         // 2. Query provided -> use search endpoint
-        const trimmedQuery = query.trim()
+        const trimmedQuery = param?.query?.trim()
         if (!trimmedQuery) return []
 
         const url = `${FINNHUB_BASE_URL}/search?q=${encodeURIComponent(trimmedQuery)}&token=${token}`

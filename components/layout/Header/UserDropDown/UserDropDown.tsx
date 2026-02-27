@@ -23,10 +23,9 @@ import { NavItems } from '../NavItems'
 type UserDropDownProps = {
   user: User
   initialStocks: StockWithWatchlistStatus[]
-  watchlistSymbols: string[]
 }
 
-export default function UserDropDown({ user, initialStocks, watchlistSymbols }: UserDropDownProps) {
+export default function UserDropDown({ user, initialStocks }: UserDropDownProps) {
   const router = useRouter()
 
   const handleSignOut = async () => {
@@ -77,7 +76,7 @@ export default function UserDropDown({ user, initialStocks, watchlistSymbols }: 
         </DropdownMenuItem>
         <DropdownMenuSeparator className="hidden sm:block bg-gray-600" />
         <nav className="sm:hidden">
-          <NavItems initialStocks={initialStocks} watchlistSymbols={watchlistSymbols} />
+          <NavItems initialStocks={initialStocks} />
         </nav>
       </DropdownMenuContent>
     </DropdownMenu>

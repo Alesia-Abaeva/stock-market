@@ -2,7 +2,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 
 import { searchStocks } from '@/lib/actions/finnhub.actions'
-import { getWatchlistSymbolsByEmail } from '@/lib/actions/watchlist.actions'
 import { User } from '@/shared/types/global'
 
 import { NavItems } from './NavItems'
@@ -13,9 +12,7 @@ type HeaderProps = {
 }
 
 export default async function Header({ user }: HeaderProps) {
-  const watchlistSymbols = await getWatchlistSymbolsByEmail(user?.email)
-
-  const initialStocks = await searchStocks({ watchlistSymbols })
+  const initialStocks = await searchStocks(null)
 
   return (
     <header className="sticky top-0 header">
@@ -25,15 +22,9 @@ export default async function Header({ user }: HeaderProps) {
         </Link>
 
         <nav className="hidden sm:block">
-          <NavItems initialStocks={initialStocks} watchlistSymbols={watchlistSymbols} />
+          <NavItems initialStocks={initialStocks} />
         </nav>
-        {user && (
-          <UserDropDown
-            user={user}
-            initialStocks={initialStocks}
-            watchlistSymbols={watchlistSymbols}
-          />
-        )}
+        {user && <UserDropDown user={user} initialStocks={initialStocks} />}
       </div>
     </header>
   )

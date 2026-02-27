@@ -1,11 +1,16 @@
 'use server'
 
+import { cacheTag, revalidatePath } from 'next/cache'
+
 import { Watchlist } from '@/database/models/watchlist.model'
 import { connectToDataBase } from '@/database/mongoose'
 
 export async function getWatchlistSymbolsByEmail(email?: string): Promise<string[]> {
-  if (!email) return []
+  'use cache'
 
+  cacheTag('watchlist-data')
+
+  if (!email) return []
   try {
     const mongoose = await connectToDataBase()
     const db = mongoose?.connection.db
@@ -66,6 +71,8 @@ export async function addToWatchList(
       company,
     })
 
+    revalidatePath('/watchlist') // Optional: revalidate home page if needed
+    // revalidateTag('watchlist-data', {})
     return { success: true, message: 'Added to watchlist' }
   } catch (err) {
     console.error('addToWatchList error:', err)
@@ -106,6 +113,9 @@ export async function removeFromWatchList(
     }
 
     await Watchlist.deleteOne({ userId, symbol: symbol.toUpperCase() })
+
+    revalidatePath('/watchlist')
+    // revalidateTag('watchlist-data', {})
 
     return { success: true, message: 'Removed from watchlist' }
   } catch (err) {

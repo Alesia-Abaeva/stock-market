@@ -5,8 +5,7 @@ import React from 'react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
-import { addToWatchList, removeFromWatchList } from '@/lib/actions/watchlist.actions'
-import { useUser } from '@/shared/providers/UserProvider'
+import { useWatchlist } from '@/shared/providers/WatchlistProvider'
 
 type WatchlistButtonProps = {
   symbol: string
@@ -15,8 +14,8 @@ type WatchlistButtonProps = {
 }
 
 const WatchlistButton = ({ symbol, variant = 'button', isActive }: WatchlistButtonProps) => {
-  const { user, loading } = useUser()
   const [isAdding, setIsAdding] = React.useState(isActive)
+  const { loading, addToWatchlist, removeFromWatchlist } = useWatchlist()
 
   const handleAddToWatchlist = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
@@ -24,45 +23,22 @@ const WatchlistButton = ({ symbol, variant = 'button', isActive }: WatchlistButt
 
     if (loading) return
 
-    if (!user?.email) {
-      toast.error('Please sign in to add to watchlist')
-      return
-    }
-
     if (isActive) {
       setIsAdding(false)
 
-      try {
-        const result = await removeFromWatchList(user.email, symbol, symbol)
-        if (result.success) {
-          toast.success(result.message)
-        } else {
-          toast.error(result.message)
-          setIsAdding(true)
-        }
-      } catch (e) {
+      removeFromWatchlist(symbol, symbol).catch((e) => {
         console.error(e)
         toast.error('Failed to remove from watchlist')
         setIsAdding(true)
-      }
+      })
+    } else {
+      setIsAdding(true)
 
-      return
-    }
-
-    setIsAdding(true)
-
-    try {
-      const result = await addToWatchList(user.email, symbol, symbol)
-      if (result.success) {
-        toast.success(result.message)
-      } else {
-        toast.error(result.message)
+      addToWatchlist(symbol, symbol).catch((e) => {
+        console.error(e)
+        toast.error('Failed to add to watchlist')
         setIsAdding(false)
-      }
-    } catch (e) {
-      console.error(e)
-      toast.error('Failed to add to watchlist')
-      setIsAdding(false)
+      })
     }
   }
 

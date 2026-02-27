@@ -8,6 +8,7 @@ import { Button } from '@/components/ui'
 import { CommandDialog, CommandEmpty, CommandInput, CommandList } from '@/components/ui/command'
 import { searchStocks } from '@/lib/actions/finnhub.actions'
 import { useDebounce } from '@/shared/hooks/use-debouns'
+import { useWatchlist } from '@/shared/providers/WatchlistProvider'
 import { StockWithWatchlistStatus } from '@/shared/types/global'
 
 import { WatchlistButton } from '../Watchlist'
@@ -16,7 +17,6 @@ export type SearchCommandProps = {
   renderAs?: 'button' | 'text'
   label?: string
   initialStocks: StockWithWatchlistStatus[]
-  watchlistSymbols: string[]
 }
 
 const NUMBER_OF_STOCKS_TO_SHOW = 10
@@ -25,12 +25,13 @@ export function SearchCommand({
   renderAs = 'button',
   label = 'Add stock',
   initialStocks,
-  watchlistSymbols,
 }: SearchCommandProps) {
   const [open, setOpen] = React.useState(false)
   const [searchTerm, setSearchTerm] = React.useState('')
   const [loading, setLoading] = React.useState(false)
   const [stock, setStock] = React.useState<StockWithWatchlistStatus[]>(initialStocks)
+
+  const { watchlistSymbols, isInWatchlist } = useWatchlist()
 
   const isSearchMode = !!searchTerm.trim()
 
@@ -135,7 +136,7 @@ export function SearchCommand({
                     <WatchlistButton
                       symbol={stock.symbol}
                       variant="icon"
-                      isActive={stock.isInWatchlist}
+                      isActive={stock.isInWatchlist || isInWatchlist(stock.symbol)}
                     />
                   </Link>
                 </li>
