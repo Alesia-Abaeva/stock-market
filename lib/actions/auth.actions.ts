@@ -7,6 +7,18 @@ import { SignInFormData, SignUpFormData } from '@/shared/types/global'
 import { auth } from '../auth/auth'
 import { inngest } from '../inngest/client'
 
+export const getSessionAction = async () => {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    })
+    return session
+  } catch (error) {
+    console.error('Failed to get session:', error)
+    return null
+  }
+}
+
 export const signUpWithEmailActions = async (data: SignUpFormData) => {
   const { fullName, email, password, country, investmentGoals, preferredIndustry, riskTolerance } =
     data

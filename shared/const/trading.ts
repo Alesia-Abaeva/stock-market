@@ -224,6 +224,23 @@ export const COMPANY_FINANCIALS_WIDGET_CONFIG = (symbol: string) => ({
   largeChartUrl: '',
 })
 
+export const GET_WATCH_LIST_WIDGET_CONFIG = (symbols: string[]) => ({
+  colorTheme: 'dark',
+  isTransparent: true,
+  locale: 'en',
+  width: '100%',
+  height: 170,
+  symbolsGroups: [
+    {
+      name: 'watchlist',
+      symbols: symbols.map((symbol) => ({
+        name: symbol.toUpperCase(),
+        displayName: symbol.toUpperCase(),
+      })),
+    },
+  ],
+})
+
 export const POPULAR_STOCK_SYMBOLS = [
   // Tech Giants (the big technology companies)
   'AAPL',

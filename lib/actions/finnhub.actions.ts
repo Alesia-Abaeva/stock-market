@@ -6,6 +6,8 @@ import { formatArticle, getDateRange, validateArticle } from '@/lib/utils'
 import { POPULAR_STOCK_SYMBOLS } from '@/shared/const/trading'
 import { MarketNewsArticle, RawNewsArticle } from '@/shared/types/global'
 
+import { getWatchlistSymbolsByEmail } from './watchlist.actions'
+
 const FINNHUB_BASE_URL = 'https://finnhub.io/api/v1'
 const NEXT_PUBLIC_FINNHUB_API_KEY = process.env.NEXT_PUBLIC_FINNHUB_API_KEY ?? ''
 
@@ -120,72 +122,88 @@ export async function getNews(symbols?: string[]): Promise<MarketNewsArticle[]> 
   }
 }
 
-export const searchStocks = cache(async (query?: string): Promise<StockWithWatchlistStatus[]> => {
-  try {
-    const token = NEXT_PUBLIC_FINNHUB_API_KEY
-    const results: StockWithWatchlistStatus[] = []
+type SearchStocksParams = {
+  query?: string
+  watchlistSymbols?: string[]
+} | null
 
-    if (!query) {
-      // 1. No query -> fetch top popular symbols
-      // We'll limit to first 10 for performance
-      const topSymbols = POPULAR_STOCK_SYMBOLS.slice(0, 10)
+export const searchStocks = cache(
+  async (param: SearchStocksParams): Promise<StockWithWatchlistStatus[]> => {
+    try {
+      const token = NEXT_PUBLIC_FINNHUB_API_KEY
+      const results: StockWithWatchlistStatus[] = []
+      let userWatchlistSymbols: Set<string> = new Set()
 
-      await Promise.all(
-        topSymbols.map(async (sym) => {
-          try {
-            // Setup caching for 1 hour (3600s)
-            const url = `${FINNHUB_BASE_URL}/stock/profile2?symbol=${sym}&token=${token}`
-            // We reuse fetchJSON but need to type the return.
-            // Profile2 returns { country, currency, exchange, name, ticker, ... }
-            const profile = await fetchJSON<{
-              name: string
-              ticker: string
-              exchange: string
-              finnhubIndustry: string
-            }>(url, 3600)
-
-            if (profile && profile.ticker) {
-              results.push({
-                symbol: profile.ticker.toUpperCase(),
-                name: profile.name || profile.ticker,
-                exchange: profile.exchange || 'US',
-                type: 'Common Stock', // Default for profile2
-                isInWatchlist: false,
-              })
-            }
-          } catch (e) {
-            // Ignore individual failures
-            console.error(`Failed to fetch profile for ${sym}`, e)
-          }
-        })
-      )
-    } else {
-      // 2. Query provided -> use search endpoint
-      const trimmedQuery = query.trim()
-      if (!trimmedQuery) return []
-
-      const url = `${FINNHUB_BASE_URL}/search?q=${encodeURIComponent(trimmedQuery)}&token=${token}`
-      const searchRes = await fetchJSON<FinnhubSearchResponse>(url, 1800) // 30 mins cache
-
-      if (searchRes && searchRes.result) {
-        searchRes.result.forEach((item) => {
-          // Filter out garbage if needed, otherwise map
-          if (!item.symbol) return
-          results.push({
-            symbol: item.symbol.toUpperCase(),
-            name: item.description || item.symbol,
-            exchange: item.displaySymbol?.split(':')[0] || 'US', // e.g. "NASDAQ:AAPL" -> NASDAQ
-            type: item.type || 'Stock',
-            isInWatchlist: false,
-          })
-        })
+      if (param?.watchlistSymbols) {
+        userWatchlistSymbols = new Set(param.watchlistSymbols)
       }
-    }
 
-    // Limit to 15 items
-    return results.slice(0, 15)
-  } catch (error) {
-    console.error('Error in stock search:', error)
-    return []
+      console.log('User watchlist symbols:', userWatchlistSymbols)
+
+      if (!param?.query) {
+        // 1. No query -> fetch top popular symbols
+        // We'll limit to first 10 for performance
+        const topSymbols = POPULAR_STOCK_SYMBOLS.slice(0, 10)
+
+        await Promise.all(
+          topSymbols.map(async (sym) => {
+            try {
+              // Setup caching for 1 hour (3600s)
+              const url = `${FINNHUB_BASE_URL}/stock/profile2?symbol=${sym}&token=${token}`
+              // We reuse fetchJSON but need to type the return.
+              // Profile2 returns { country, currency, exchange, name, ticker, ... }
+              const profile = await fetchJSON<{
+                name: string
+                ticker: string
+                exchange: string
+                finnhubIndustry: string
+              }>(url, 3600)
+
+              if (profile && profile.ticker) {
+                const tickerUpper = profile.ticker.toUpperCase()
+                results.push({
+                  symbol: tickerUpper,
+                  name: profile.name || profile.ticker,
+                  exchange: profile.exchange || 'US',
+                  type: 'Common Stock', // Default for profile2
+                  isInWatchlist: userWatchlistSymbols.has(tickerUpper),
+                })
+              }
+            } catch (e) {
+              // Ignore individual failures
+              console.error(`Failed to fetch profile for ${sym}`, e)
+            }
+          })
+        )
+      } else {
+        // 2. Query provided -> use search endpoint
+        const trimmedQuery = param?.query?.trim()
+        if (!trimmedQuery) return []
+
+        const url = `${FINNHUB_BASE_URL}/search?q=${encodeURIComponent(trimmedQuery)}&token=${token}`
+        const searchRes = await fetchJSON<FinnhubSearchResponse>(url, 1800) // 30 mins cache
+
+        if (searchRes && searchRes.result) {
+          searchRes.result.forEach((item) => {
+            // Filter out garbage if needed, otherwise map
+            if (!item.symbol) return
+            const tickerUpper = item.symbol.toUpperCase()
+            results.push({
+              symbol: tickerUpper,
+              name: item.description || item.symbol,
+              exchange: item.displaySymbol?.split(':')[0] || 'US', // e.g. "NASDAQ:AAPL" -> NASDAQ
+              type: item.type || 'Stock',
+              isInWatchlist: userWatchlistSymbols.has(tickerUpper),
+            })
+          })
+        }
+      }
+
+      // Limit to 15 items
+      return results.slice(0, 15)
+    } catch (error) {
+      console.error('Error in stock search:', error)
+      return []
+    }
   }
-})
+)

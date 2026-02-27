@@ -12,7 +12,7 @@ type HeaderProps = {
 }
 
 export default async function Header({ user }: HeaderProps) {
-  const initialStocks = await searchStocks()
+  const initialStocks = await searchStocks(null)
 
   return (
     <header className="sticky top-0 header">
