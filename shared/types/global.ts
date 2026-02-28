@@ -166,10 +166,6 @@ export type MarketNewsArticle = {
   image?: string
 }
 
-export type WatchlistNewsProps = {
-  news?: MarketNewsArticle[]
-}
-
 export type SearchCommandProps = {
   open?: boolean
   setOpen?: (open: boolean) => void

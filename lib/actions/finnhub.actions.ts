@@ -6,8 +6,6 @@ import { formatArticle, getDateRange, validateArticle } from '@/lib/utils'
 import { POPULAR_STOCK_SYMBOLS } from '@/shared/const/trading'
 import { MarketNewsArticle, RawNewsArticle } from '@/shared/types/global'
 
-import { getWatchlistSymbolsByEmail } from './watchlist.actions'
-
 const FINNHUB_BASE_URL = 'https://finnhub.io/api/v1'
 const NEXT_PUBLIC_FINNHUB_API_KEY = process.env.NEXT_PUBLIC_FINNHUB_API_KEY ?? ''
 
@@ -207,3 +205,53 @@ export const searchStocks = cache(
     }
   }
 )
+
+export interface StockDetails {
+  symbol: string
+  name: string
+  price: number
+  change: number
+  changePercent: number
+  marketCap: number
+  peRatio: number
+}
+
+export async function getStockDetails(symbols: string[]): Promise<StockDetails[]> {
+  const token = process.env.NEXT_PUBLIC_FINNHUB_API_KEY
+  if (!token) return []
+
+  try {
+    const promises = symbols.map(async (symbol) => {
+      try {
+        const quoteUrl = `${FINNHUB_BASE_URL}/quote?symbol=${symbol}&token=${token}`
+        const metricUrl = `${FINNHUB_BASE_URL}/stock/metric?symbol=${symbol}&metric=all&token=${token}`
+        const profileUrl = `${FINNHUB_BASE_URL}/stock/profile2?symbol=${symbol}&token=${token}`
+
+        const [quote, metrics, profile] = await Promise.all([
+          fetch(quoteUrl).then((res) => res.json()),
+          fetch(metricUrl).then((res) => res.json()),
+          fetch(profileUrl).then((res) => res.json()),
+        ])
+
+        return {
+          symbol: symbol.toUpperCase(),
+          name: profile?.name || symbol,
+          price: quote.c || 0,
+          change: quote.d || 0,
+          changePercent: quote.dp || 0,
+          marketCap: metrics?.metric?.marketCapitalization || 0,
+          peRatio: metrics?.metric?.peBasicExclExtraTTM || 0,
+        }
+      } catch (error) {
+        console.error(`Error fetching details for ${symbol}:`, error)
+        return null
+      }
+    })
+
+    const results = await Promise.all(promises)
+    return results.filter((item): item is StockDetails => item !== null)
+  } catch (error) {
+    console.error('Error fetching stock details:', error)
+    return []
+  }
+}
