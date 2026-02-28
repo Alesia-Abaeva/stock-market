@@ -11,7 +11,7 @@ import { useDebounce } from '@/shared/hooks/use-debouns'
 import { useWatchlist } from '@/shared/providers/WatchlistProvider'
 import { StockWithWatchlistStatus } from '@/shared/types/global'
 
-import { WatchlistButton } from '../Watchlist'
+import { WatchlistButton } from '../Watchlist/WatchlistButton'
 
 export type SearchCommandProps = {
   renderAs?: 'button' | 'text'
