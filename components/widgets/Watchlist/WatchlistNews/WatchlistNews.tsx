@@ -1,6 +1,6 @@
 'use client'
-
 import { ArrowRight } from 'lucide-react'
+import { useEffect, useRef } from 'react'
 
 import { MarketNewsArticle } from '@/shared/types/global'
 
@@ -9,6 +9,38 @@ export type WatchlistNewsProps = {
 }
 
 const WatchlistNews = ({ news }: WatchlistNewsProps) => {
+  const socketRef = useRef<WebSocket | null>(null)
+
+  useEffect(() => {
+    // Create WebSocket connection
+    const socket = new WebSocket(
+      'wss://ws.finnhub.io?token=d6c33d1r01qp4li1c3egd6c33d1r01qp4li1c3f0'
+    )
+    socketRef.current = socket
+
+    // Connection opened -> Subscribe
+    socket.addEventListener('open', () => {
+      socket.send(JSON.stringify({ type: 'subscribe', symbol: 'AAPL' }))
+      socket.send(JSON.stringify({ type: 'subscribe', symbol: 'BINANCE:BTCUSDT' }))
+      socket.send(JSON.stringify({ type: 'subscribe', symbol: 'IC MARKETS:1' }))
+    })
+
+    // Listen for messages
+    socket.addEventListener('message', (event) => {
+      console.log('Message from server ', event.data)
+    })
+
+    // Cleanup on unmount
+    return () => {
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify({ type: 'unsubscribe', symbol: 'AAPL' }))
+        socket.send(JSON.stringify({ type: 'unsubscribe', symbol: 'BINANCE:BTCUSDT' }))
+        socket.send(JSON.stringify({ type: 'unsubscribe', symbol: 'IC MARKETS:1' }))
+        socket.close()
+      }
+    }
+  }, []) // Empty dependency array means this runs once on mount
+
   return (
     <div className="w-full">
       <h3 className="font-semibold text-2xl text-gray-100 mb-5">News</h3>

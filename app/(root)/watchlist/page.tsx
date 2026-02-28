@@ -1,7 +1,7 @@
 import { TradingView } from '@/components/widgets/TradingView'
-import { WatchlistNews } from '@/components/widgets/Watchlist'
+import { WatchlistNews, WatchlistTable } from '@/components/widgets/Watchlist'
 import { getSessionAction } from '@/lib/actions/auth.actions'
-import { getNews } from '@/lib/actions/finnhub.actions'
+import { getNews, getStockDetails } from '@/lib/actions/finnhub.actions'
 import { getWatchlistSymbolsByEmail } from '@/lib/actions/watchlist.actions'
 import { GET_WATCH_LIST_WIDGET_CONFIG } from '@/shared/const/trading'
 
@@ -18,24 +18,21 @@ export default async function Wishlist() {
 
   const data = await getWatchlistSymbolsByEmail(user?.user.email)
 
+  const stockDetails = await getStockDetails(data)
+
   const news = await getNews(data)
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+      <div className="watchlist-container">
         {/* Left Column (2/3 width on large screens) */}
-        <div className="col-span-1 xl:col-span-2 space-y-6">
-          <TradingView
-            scriptUrl={`${scriptUrl}market-quotes.js`}
-            config={GET_WATCH_LIST_WIDGET_CONFIG(data)}
-            height={600}
-            title="Watchlist"
-          />
+        <div className="watchlist">
+          <WatchlistTable stocks={stockDetails} />
         </div>
 
         {/* Right Column (1/3 width on large screens) */}
         {/* {news && news.length > 0 && (
-          <div className="col-span-1 space-y-6">
+          <div className="watchlist-alerts">
             <WatchlistNews news={news} />
           </div>
         )} */}
