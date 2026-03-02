@@ -1,18 +1,33 @@
 'use client'
 
 import Link from 'next/link'
+import React from 'react'
 
 import { Button } from '@/components/ui/button'
-import { StockDetails } from '@/lib/actions/finnhub.actions'
+import { getStockDetails, StockDetails } from '@/lib/actions/finnhub.actions'
+import { useWatchlist } from '@/shared/providers/WatchlistProvider'
 
 import WatchlistButton from '../WatchlistButton/WatchlistButton'
 
-type WatchlistTableProps = {
-  stocks: StockDetails[]
-}
+const WatchlistTable = () => {
+  const { watchlistSymbols, loading: watchlistLoading } = useWatchlist()
+  const [stocks, setStocks] = React.useState<StockDetails[]>([])
 
-const WatchlistTable = ({ stocks }: WatchlistTableProps) => {
-  console.log('Rendering WatchlistTable with stocks:', stocks)
+  React.useEffect(() => {
+    const fetchStockData = async () => {
+      try {
+        const stockList = await getStockDetails(watchlistSymbols)
+        setStocks(stockList)
+      } catch (error) {
+        console.error('Failed to fetch watchlist stock data:', error)
+      } finally {
+      }
+    }
+
+    if (!watchlistLoading) {
+      fetchStockData()
+    }
+  }, [watchlistSymbols, watchlistLoading])
 
   return (
     <div className="w-full overflow-x-auto pb-8">
@@ -31,34 +46,57 @@ const WatchlistTable = ({ stocks }: WatchlistTableProps) => {
           </tr>
         </thead>
         <tbody className="text-gray-200">
-          {stocks.map((stock) => (
-            <tr key={stock.symbol} className="table-row">
-              <td className="p-4 border-r border-gray-600">
-                <WatchlistButton symbol={stock.symbol} variant="icon" />
-              </td>
-              <td className="table-cell ">{stock.name}</td>
-              <td className="table-cell ">
-                <Link
-                  href={`/stocks/${stock.symbol}`}
-                  className="hover:text-blue-400 hover:underline"
-                >
-                  {stock.symbol}
-                </Link>
-              </td>
-              <td className="table-cell">${stock.price.toFixed(2)}</td>
-              <td className={`table-cell ${stock.change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                {stock.change > 0 ? '+' : ''}
-                {stock.change.toFixed(2)}%
-              </td>
-              <td className="table-cell ">{formatLargeNumber(stock.marketCap)}</td>
-              <td className="table-cell">{stock.peRatio?.toFixed(2) || '-'}</td>
-              <td className="table-cell text-right">
-                <Button variant="outline" size="sm" className=" add-alert ">
-                  Add Alert
-                </Button>
+          {watchlistLoading ? (
+            Array.from({ length: 5 }).map((_, index) => (
+              <tr key={index} className="table-row ">
+                <td className="p-4 border-r border-gray-600 skeleton"></td>
+                <td className="table-cell skeleton "></td>
+                <td className="table-cell skeleton "></td>
+                <td className="table-cell skeleton "></td>
+                <td className="table-cell skeleton "></td>
+                <td className="table-cell skeleton "></td>
+                <td className="table-cell skeleton "></td>
+                <td className="table-cell skeleton "></td>
+              </tr>
+            ))
+          ) : stocks.length === 0 ? (
+            <tr className="table-row ">
+              <td className="h-20  text-center text-gray-400" colSpan={8}>
+                Watchlist is empty
               </td>
             </tr>
-          ))}
+          ) : (
+            stocks.map((stock) => (
+              <tr key={stock.symbol} className="table-row">
+                <td className="p-4 border-r border-gray-600">
+                  <WatchlistButton symbol={stock.symbol} variant="icon" />
+                </td>
+                <td className="table-cell ">{stock.name}</td>
+                <td className="table-cell ">
+                  <Link
+                    href={`/stocks/${stock.symbol}`}
+                    className="hover:text-blue-400 hover:underline"
+                  >
+                    {stock.symbol}
+                  </Link>
+                </td>
+                <td className="table-cell">${stock.price.toFixed(2)}</td>
+                <td
+                  className={`table-cell ${stock.change >= 0 ? 'text-green-500' : 'text-red-500'}`}
+                >
+                  {stock.change > 0 ? '+' : ''}
+                  {stock.change.toFixed(2)}%
+                </td>
+                <td className="table-cell ">{formatLargeNumber(stock.marketCap)}</td>
+                <td className="table-cell">{stock.peRatio?.toFixed(2) || '-'}</td>
+                <td className="table-cell text-right">
+                  <Button variant="outline" size="sm" className=" add-alert ">
+                    Add Alert
+                  </Button>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>
