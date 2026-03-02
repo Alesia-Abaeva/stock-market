@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import React from 'react'
 
 import { Button } from '@/components/ui/button'
 import { StockDetails } from '@/lib/actions/finnhub.actions'
@@ -13,6 +12,8 @@ type WatchlistTableProps = {
 }
 
 const WatchlistTable = ({ stocks }: WatchlistTableProps) => {
+  console.log('Rendering WatchlistTable with stocks:', stocks)
+
   return (
     <div className="w-full overflow-x-auto pb-8">
       <h3 className="watchlist-title">Watchlist</h3>
@@ -33,7 +34,7 @@ const WatchlistTable = ({ stocks }: WatchlistTableProps) => {
           {stocks.map((stock) => (
             <tr key={stock.symbol} className="table-row">
               <td className="p-4 border-r border-gray-600">
-                <WatchlistButton symbol={stock.symbol} isActive={true} variant="icon" />
+                <WatchlistButton symbol={stock.symbol} variant="icon" />
               </td>
               <td className="table-cell ">{stock.name}</td>
               <td className="table-cell ">

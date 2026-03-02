@@ -1,12 +1,10 @@
-import { TradingView } from '@/components/widgets/TradingView'
 import { WatchlistNews, WatchlistTable } from '@/components/widgets/Watchlist'
 import { getSessionAction } from '@/lib/actions/auth.actions'
 import { getNews, getStockDetails } from '@/lib/actions/finnhub.actions'
 import { getWatchlistSymbolsByEmail } from '@/lib/actions/watchlist.actions'
-import { GET_WATCH_LIST_WIDGET_CONFIG } from '@/shared/const/trading'
 
 export default async function Wishlist() {
-  const scriptUrl = `https://s3.tradingview.com/external-embedding/embed-widget-`
+  // const scriptUrl = `https://s3.tradingview.com/external-embedding/embed-widget-`
 
   const user = await getSessionAction()
 

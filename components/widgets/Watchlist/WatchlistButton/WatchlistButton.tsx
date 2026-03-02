@@ -1,6 +1,6 @@
 'use client'
 
-import { Star } from 'lucide-react'
+import { Star, Trash2 } from 'lucide-react'
 import React from 'react'
 import { toast } from 'sonner'
 
@@ -10,12 +10,12 @@ import { useWatchlist } from '@/shared/providers/WatchlistProvider'
 type WatchlistButtonProps = {
   symbol: string
   variant?: 'button' | 'icon'
-  isActive?: boolean
 }
 
-const WatchlistButton = ({ symbol, variant = 'button', isActive }: WatchlistButtonProps) => {
-  const [isAdding, setIsAdding] = React.useState(isActive)
-  const { loading, addToWatchlist, removeFromWatchlist } = useWatchlist()
+const WatchlistButton = ({ symbol, variant = 'button' }: WatchlistButtonProps) => {
+  const { loading, addToWatchlist, removeFromWatchlist, watchlistSymbols } = useWatchlist()
+
+  const isAdding = watchlistSymbols.includes(symbol)
 
   const handleAddToWatchlist = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault()
@@ -23,21 +23,18 @@ const WatchlistButton = ({ symbol, variant = 'button', isActive }: WatchlistButt
 
     if (loading) return
 
-    if (isActive) {
-      setIsAdding(false)
-
+    if (isAdding) {
       removeFromWatchlist(symbol, symbol).catch((e) => {
         console.error(e)
         toast.error('Failed to remove from watchlist')
-        setIsAdding(true)
       })
     } else {
-      setIsAdding(true)
+      // setIsAdding(true)
 
       addToWatchlist(symbol, symbol).catch((e) => {
         console.error(e)
         toast.error('Failed to add to watchlist')
-        setIsAdding(false)
+        // setIsAdding(false)
       })
     }
   }
@@ -54,8 +51,12 @@ const WatchlistButton = ({ symbol, variant = 'button', isActive }: WatchlistButt
   }
 
   return (
-    <Button className="watchlist-btn mb-6" onClick={handleAddToWatchlist}>
-      Add to Watchlist
+    <Button
+      className={`${isAdding ? 'watchlist-remove' : ''} mb-6 watchlist-btn`}
+      onClick={handleAddToWatchlist}
+    >
+      {isAdding && <Trash2 />}
+      {isAdding ? 'Remove from Watchlist' : 'Add to Watchlist'}
     </Button>
   )
 }
