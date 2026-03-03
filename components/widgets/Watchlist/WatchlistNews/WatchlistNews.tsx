@@ -1,45 +1,34 @@
 'use client'
 import { ArrowRight } from 'lucide-react'
-import { useEffect, useRef } from 'react'
+import React from 'react'
 
+import { getNews } from '@/lib/actions/finnhub.actions'
+import { formatTimeAgo } from '@/lib/utils'
+import { useWatchlist } from '@/shared/providers/WatchlistProvider'
 import { MarketNewsArticle } from '@/shared/types/global'
 
 export type WatchlistNewsProps = {
   news?: MarketNewsArticle[]
 }
 
-const WatchlistNews = ({ news }: WatchlistNewsProps) => {
-  const socketRef = useRef<WebSocket | null>(null)
+const WatchlistNews = () => {
+  const { watchlistSymbols, loading: watchlistLoading } = useWatchlist()
+  const [news, setNews] = React.useState<MarketNewsArticle[]>([])
 
-  useEffect(() => {
-    // Create WebSocket connection
-    const socket = new WebSocket(
-      'wss://ws.finnhub.io?token=d6c33d1r01qp4li1c3egd6c33d1r01qp4li1c3f0'
-    )
-    socketRef.current = socket
-
-    // Connection opened -> Subscribe
-    socket.addEventListener('open', () => {
-      socket.send(JSON.stringify({ type: 'subscribe', symbol: 'AAPL' }))
-      socket.send(JSON.stringify({ type: 'subscribe', symbol: 'BINANCE:BTCUSDT' }))
-      socket.send(JSON.stringify({ type: 'subscribe', symbol: 'IC MARKETS:1' }))
-    })
-
-    // Listen for messages
-    socket.addEventListener('message', (event) => {
-      console.log('Message from server ', event.data)
-    })
-
-    // Cleanup on unmount
-    return () => {
-      if (socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify({ type: 'unsubscribe', symbol: 'AAPL' }))
-        socket.send(JSON.stringify({ type: 'unsubscribe', symbol: 'BINANCE:BTCUSDT' }))
-        socket.send(JSON.stringify({ type: 'unsubscribe', symbol: 'IC MARKETS:1' }))
-        socket.close()
+  React.useEffect(() => {
+    const fetchStockData = async () => {
+      try {
+        const stockList = await getNews(watchlistSymbols)
+        setNews(stockList)
+      } catch (error) {
+        console.error('Failed to fetch news:', error)
       }
     }
-  }, []) // Empty dependency array means this runs once on mount
+
+    if (!watchlistLoading && watchlistSymbols.length > 0) {
+      fetchStockData()
+    }
+  }, [watchlistSymbols, watchlistLoading])
 
   return (
     <div className="w-full">
@@ -52,7 +41,7 @@ const WatchlistNews = ({ news }: WatchlistNewsProps) => {
 
             <p className="news-title">{headline}</p>
             <div className="news-meta">
-              {source} • {datetime}
+              {source} • {formatTimeAgo(datetime)}
             </div>
 
             <div className="news-summary">{summary}</div>

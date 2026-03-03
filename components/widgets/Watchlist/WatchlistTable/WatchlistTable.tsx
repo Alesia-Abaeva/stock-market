@@ -20,7 +20,6 @@ const WatchlistTable = () => {
         setStocks(stockList)
       } catch (error) {
         console.error('Failed to fetch watchlist stock data:', error)
-      } finally {
       }
     }
 

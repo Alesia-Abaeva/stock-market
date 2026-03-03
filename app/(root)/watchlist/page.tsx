@@ -1,11 +1,7 @@
 import { WatchlistNews, WatchlistTable } from '@/components/widgets/Watchlist'
 import { getSessionAction } from '@/lib/actions/auth.actions'
-import { getNews } from '@/lib/actions/finnhub.actions'
-import { getWatchlistSymbolsByEmail } from '@/lib/actions/watchlist.actions'
 
 export default async function Wishlist() {
-  // const scriptUrl = `https://s3.tradingview.com/external-embedding/embed-widget-`
-
   const user = await getSessionAction()
 
   if (!user?.user?.email) {
@@ -13,10 +9,6 @@ export default async function Wishlist() {
       <div className="flex min-h-screen  home-wrapper">Please sign in to view your watchlist.</div>
     )
   }
-
-  const data = await getWatchlistSymbolsByEmail(user?.user.email)
-
-  const news = await getNews(data)
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -35,7 +27,7 @@ export default async function Wishlist() {
       </div>
 
       <section className="grid w-full gap-8">
-        {news && news.length > 0 && <WatchlistNews news={news} />}
+        <WatchlistNews />
       </section>
     </div>
   )
