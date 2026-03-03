@@ -1,7 +1,7 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  cacheComponents: true,
+  // cacheComponents: true,
   // pageExtensions: ['js', 'jsx', 'md', 'mdx', 'ts', 'tsx'],
   /* config options here */
 }

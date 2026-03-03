@@ -486,3 +486,8 @@
 .scrollbar-hide-default::-webkit-scrollbar-thumb:hover {
   background-color: #9095a1;
 }
+
+/* Skeleton Loading */
+.skeleton {
+  @apply animate-pulse bg-white/10;
+}

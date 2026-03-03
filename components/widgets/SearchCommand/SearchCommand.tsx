@@ -31,7 +31,7 @@ export function SearchCommand({
   const [loading, setLoading] = React.useState(false)
   const [stock, setStock] = React.useState<StockWithWatchlistStatus[]>(initialStocks)
 
-  const { watchlistSymbols, isInWatchlist } = useWatchlist()
+  const { watchlistSymbols } = useWatchlist()
 
   const isSearchMode = !!searchTerm.trim()
 
@@ -136,7 +136,7 @@ export function SearchCommand({
                     <WatchlistButton
                       symbol={stock.symbol}
                       variant="icon"
-                      isActive={stock.isInWatchlist || isInWatchlist(stock.symbol)}
+                      // isActive={stock.isInWatchlist || isInWatchlist(stock.symbol)}
                     />
                   </Link>
                 </li>
