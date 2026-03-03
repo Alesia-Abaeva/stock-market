@@ -22,8 +22,6 @@ type AlertModalProps = {
   alertId?: string
   alertData?: AlertData
   action?: string
-  //   open: boolean
-  //   setOpen: (open: boolean) => void
 }
 
 type PriceAlertProps = React.PropsWithChildren<AlertModalProps>
@@ -48,17 +46,20 @@ const PriceAlert = ({ action, alertData, alertId, children }: PriceAlertProps) =
     formState: { errors, isSubmitted },
   } = useForm<Alert>({ defaultValues, mode: 'onBlur' })
 
-  console.log('PriceAlert alertData:', alertData)
+  const onSubmit = async (data: Alert) => {
+    try {
+    } catch (e) {}
+  }
 
   return (
     <Dialog>
-      <form>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <DialogTrigger asChild>
           {/* <Button variant="outline">Open Dialog</Button> */}
           {children}
         </DialogTrigger>
         <DialogContent className="alert-dialog ">
-          <DialogHeader className="pb-5">
+          <DialogHeader className="pb-2">
             <DialogTitle className="alert-title ">Price Alert</DialogTitle>
             <DialogDescription
             // className="alert-empty"
@@ -66,7 +67,7 @@ const PriceAlert = ({ action, alertData, alertId, children }: PriceAlertProps) =
               {/* No active alerts. Add one from the watchlist. */}
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-5">
+          <div className="space-y-3">
             <InputField
               label="Alert Name"
               name="alertName"
