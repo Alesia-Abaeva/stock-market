@@ -23,9 +23,16 @@ export const PREFERRED_INDUSTRIES = [
 export const ALERT_TYPE_OPTIONS = [
   { value: 'upper', label: 'Upper' },
   { value: 'lower', label: 'Lower' },
+  { value: 'price', label: 'Price' },
 ]
 
 export const CONDITION_OPTIONS = [
   { value: 'greater', label: 'Greater than (>)' },
   { value: 'less', label: 'Less than (<)' },
+]
+
+export const FREQUENCY_OPTIONS = [
+  { value: 'once', label: 'Once' },
+  { value: 'daily', label: 'Once per Day' },
+  { value: 'weekly', label: 'Once per Week' },
 ]

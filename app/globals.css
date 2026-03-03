@@ -260,7 +260,7 @@
     @apply bg-red-500! hover:bg-red-500! text-gray-900!;
   }
   .watchlist-empty-container {
-    @apply container gap-8 flex-col items-center md:mt-10 p-6 text-center;
+    @apply container gap-8 flex-col items-center md:mt-10 p-6 text-center h-16;
   }
   .watchlist-empty {
     @apply flex flex-col items-center justify-center text-center;
@@ -299,7 +299,7 @@
     @apply h-4 w-4;
   }
   .watchlist-title {
-    @apply text-xl md:text-2xl font-bold text-gray-100 pb-5;
+    @apply text-xl md:text-2xl font-bold text-gray-100;
   }
   .watchlist-table {
     @apply !relative overflow-hidden !w-full bg-gray-800 border !border-gray-600 !rounded-lg;

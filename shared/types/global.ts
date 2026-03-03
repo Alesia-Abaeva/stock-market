@@ -55,6 +55,7 @@ export type SelectFieldProps = {
   control: Control<any>
   error?: FieldError
   required?: boolean
+  disabled?: boolean
 }
 
 export type FooterLinkProps = {
@@ -175,12 +176,14 @@ export type SearchCommandProps = {
   className?: string
 }
 
+export type AlertType = 'upper' | 'lower' | 'price'
+
 export type AlertData = {
   symbol: string
   company: string
   alertName: string
-  alertType: 'upper' | 'lower'
-  threshold: string
+  alertType?: AlertType
+  threshold: number
 }
 
 export type AlertModalProps = {
@@ -203,13 +206,18 @@ export type RawNewsArticle = {
   related?: string
 }
 
+export type Condition = 'greater' | 'less'
+export type Frequency = 'once' | 'daily' | 'weekly'
+
 export type Alert = {
   id: string
   symbol: string
   company: string
   alertName: string
   currentPrice: number
-  alertType: 'upper' | 'lower'
+  alertType: AlertType
   threshold: number
   changePercent?: number
+  condition?: Condition
+  frequency?: Frequency
 }
