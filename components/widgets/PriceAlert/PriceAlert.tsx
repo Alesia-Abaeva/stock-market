@@ -1,7 +1,8 @@
 'use client'
 
-import React from 'react'
+import React, { use } from 'react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 
 import { Button } from '@/components/ui'
 import {
@@ -12,7 +13,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import { addAlert } from '@/lib/actions/alert.actions'
 import { ALERT_TYPE_OPTIONS, CONDITION_OPTIONS, FREQUENCY_OPTIONS } from '@/shared/const/optionts'
+import { useUser } from '@/shared/providers/UserProvider'
 import type { Alert, AlertData } from '@/shared/types/global'
 
 import { InputField, SelectField } from '../Forms'
@@ -46,27 +49,61 @@ const PriceAlert = ({ action, alertData, alertId, children }: PriceAlertProps) =
     formState: { errors, isSubmitted },
   } = useForm<Alert>({ defaultValues, mode: 'onBlur' })
 
+  const { user } = useUser()
+
   const onSubmit = async (data: Alert) => {
+    const { alertName, symbol, company, threshold, alertType, condition, frequency, id } = data
+
+    console.log('Add alert result:')
+
     try {
-    } catch (e) {}
+      const request = {
+        email: user?.email,
+        alertName,
+        symbol,
+        company,
+        threshold,
+        alertType,
+        condition,
+        frequency,
+        id: id || `alert-${Date.now()}`,
+      }
+      const result = await addAlert(request)
+
+      console.log('Add alert result:', result)
+
+      if (result.success) {
+        console.log('Add alert successful:', result)
+        toast.success('Alert added successfully!')
+      } else {
+        toast.error(
+          result.message || 'An error occurred while adding the alert. Please try again later.'
+        )
+      }
+    } catch (e) {
+      console.error(e)
+      toast.error('An error occurred during sign-up. Please try again later.', {
+        description: e instanceof Error ? e.message : 'Unknown error',
+      })
+    }
   }
 
   return (
     <Dialog>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <DialogTrigger asChild>
-          {/* <Button variant="outline">Open Dialog</Button> */}
-          {children}
-        </DialogTrigger>
-        <DialogContent className="alert-dialog ">
-          <DialogHeader className="pb-2">
-            <DialogTitle className="alert-title ">Price Alert</DialogTitle>
-            <DialogDescription
-            // className="alert-empty"
-            >
-              {/* No active alerts. Add one from the watchlist. */}
-            </DialogDescription>
-          </DialogHeader>
+      <DialogTrigger asChild>
+        {/* <Button variant="outline">Open Dialog</Button> */}
+        {children}
+      </DialogTrigger>
+      <DialogContent className="alert-dialog ">
+        <DialogHeader className="pb-2">
+          <DialogTitle className="alert-title ">Price Alert</DialogTitle>
+          <DialogDescription
+          // className="alert-empty"
+          >
+            {/* No active alerts. Add one from the watchlist. */}
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="space-y-3">
             <InputField
               label="Alert Name"
@@ -124,8 +161,8 @@ const PriceAlert = ({ action, alertData, alertId, children }: PriceAlertProps) =
               {isSubmitted ? 'Creating alert...' : 'Create Alert'}
             </Button>
           </div>
-        </DialogContent>
-      </form>
+        </form>
+      </DialogContent>
     </Dialog>
   )
 }

@@ -206,15 +206,15 @@ export type RawNewsArticle = {
   related?: string
 }
 
-export type Condition = 'greater' | 'less'
-export type Frequency = 'once' | 'daily' | 'weekly'
+export type Condition = 'greater' | 'less' | 'equal'
+export type Frequency = 'once' | 'daily' | 'weekly' | 'hourly'
 
 export type Alert = {
   id: string
   symbol: string
   company: string
   alertName: string
-  currentPrice: number
+  currentPrice?: number
   alertType: AlertType
   threshold: number
   changePercent?: number

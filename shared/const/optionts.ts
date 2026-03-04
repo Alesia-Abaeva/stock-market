@@ -1,3 +1,5 @@
+import type { Condition, Frequency } from '../types/global'
+
 // Sign-up form select options
 export const INVESTMENT_GOALS = [
   { value: 'Growth', label: 'Growth' },
@@ -26,13 +28,14 @@ export const ALERT_TYPE_OPTIONS = [
   { value: 'price', label: 'Price' },
 ]
 
-export const CONDITION_OPTIONS = [
+export const CONDITION_OPTIONS: { value: Condition; label: string }[] = [
   { value: 'greater', label: 'Greater than (>)' },
   { value: 'less', label: 'Less than (<)' },
+  { value: 'equal', label: 'Equal to (=)' },
 ]
 
-export const FREQUENCY_OPTIONS = [
+export const FREQUENCY_OPTIONS: { value: Frequency; label: string }[] = [
   { value: 'once', label: 'Once' },
-  { value: 'daily', label: 'Once per Day' },
-  { value: 'weekly', label: 'Once per Week' },
+  { value: 'daily', label: 'Once per day' },
+  { value: 'hourly', label: 'Once per hour' },
 ]
