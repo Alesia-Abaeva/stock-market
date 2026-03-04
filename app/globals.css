@@ -455,6 +455,20 @@
   overflow: hidden !important;
 }
 
+.tradingview-widget-container-transparent {
+  background-color: transparent !important;
+  height: max-content;
+}
+
+.tradingview-widget-container-transparent iframe {
+  background-color: transparent !important;
+  height: max-content !important;
+}
+
+.tradingview-widget-container-transparent .tv-single-ticker-widget {
+  height: max-content;
+}
+
 /* Custom scrollbar that shows on hover */
 .scrollbar-hide-default {
   scrollbar-width: thin;

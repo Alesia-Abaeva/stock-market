@@ -1,4 +1,5 @@
 import { PriceAlert } from '@/components/widgets/PriceAlert'
+import { AlertList } from '@/components/widgets/PriceAlert/AlertList'
 import { WatchlistNews, WatchlistTable } from '@/components/widgets/Watchlist'
 import { getSessionAction } from '@/lib/actions/auth.actions'
 
@@ -25,11 +26,10 @@ export default async function Wishlist() {
 
         <PriceAlert />
         {/* Right Column (1/3 width on large screens) */}
-        {/* {news && news.length > 0 && (
-          <div className="watchlist-alerts">
-            <WatchlistNews news={news} />
-          </div>
-        )} */}
+
+        <div className="watchlist-alerts">
+          <AlertList />
+        </div>
       </div>
 
       <section className="grid w-full gap-8">

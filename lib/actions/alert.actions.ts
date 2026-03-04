@@ -2,13 +2,13 @@
 
 import { randomUUID } from 'crypto'
 
-import { AlertListModelDB } from '@/database/models/alert.model'
+import { AlertItem, AlertListModelDB } from '@/database/models/alert.model'
 import { connectToDataBase } from '@/database/mongoose'
 import type { Alert } from '@/shared/types/global'
 
 type AlertRequest = Alert & { email?: string }
 
-export async function getAlertListByEmail(email?: string): Promise<string[]> {
+export async function getAlertListByEmail(email?: string): Promise<AlertItem[]> {
   if (!email) return []
   try {
     const mongoose = await connectToDataBase()
@@ -25,8 +25,8 @@ export async function getAlertListByEmail(email?: string): Promise<string[]> {
     const userId = (user.id as string) || String(user._id || '')
     if (!userId) return []
 
-    const items = await AlertListModelDB.find({ userId }, { symbol: 1 }).lean()
-    return items.map((i) => String(i.symbol))
+    const items = await AlertListModelDB.find({ userId }).lean()
+    return items
   } catch (err) {
     console.error('getAlertListByEmail error:', err)
     return []
