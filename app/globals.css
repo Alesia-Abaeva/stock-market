@@ -376,6 +376,9 @@
   .alert-delete-btn {
     @apply text-gray-400 rounded-full hover:bg-red-600/15 bg-transparent cursor-pointer transition-colors;
   }
+  .modal {
+    @apply bg-gray-800! border-gray-600;
+  }
 }
 
 /* Market News Component Styles */

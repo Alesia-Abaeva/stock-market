@@ -4,7 +4,7 @@ import { randomUUID } from 'crypto'
 
 import { AlertItem, AlertListModelDB } from '@/database/models/alert.model'
 import { connectToDataBase } from '@/database/mongoose'
-import type { Alert } from '@/shared/types/global'
+import type { Alert, AlertUpdate } from '@/shared/types/global'
 
 type AlertRequest = Alert & { email?: string }
 
@@ -26,7 +26,7 @@ export async function getAlertListByEmail(email?: string): Promise<AlertItem[]> 
     if (!userId) return []
 
     const items = await AlertListModelDB.find({ userId }).lean()
-    return items
+    return JSON.parse(JSON.stringify(items))
   } catch (err) {
     console.error('getAlertListByEmail error:', err)
     return []
@@ -114,6 +114,8 @@ export async function removeAlert(
 
     const user = await db.collection('user').findOne<{ id?: string; _id?: unknown }>({ email })
 
+    console.log('removeAlert user lookup:', { email, user })
+
     if (!user) return { success: false, message: 'User not found' }
 
     const userId = (user.id as string) || String(user._id || '')
@@ -134,5 +136,60 @@ export async function removeAlert(
   } catch (err) {
     console.error('removeFromAlerts error:', err)
     return { success: false, message: 'Failed to remove from alerts' }
+  }
+}
+
+export async function changeAlert({
+  alertName,
+  threshold,
+  condition,
+  frequency,
+  id,
+  email,
+}: AlertUpdate): Promise<{ success: boolean; message: string }> {
+  if (!email || !id) {
+    return { success: false, message: 'Missing require fields' }
+  }
+
+  try {
+    const mongoose = await connectToDataBase()
+    const db = mongoose?.connection.db
+
+    if (!db) throw new Error('MongoDB connection not found')
+
+    const user = await db.collection('user').findOne<{ id?: string; _id?: unknown }>({ email })
+
+    if (!user) return { success: false, message: 'User not found' }
+
+    const userId = (user.id as string) || String(user._id || '')
+
+    if (!userId) {
+      return { success: false, message: 'User ID not found' }
+    }
+
+    // Check if alert exists
+    const existing = await AlertListModelDB.findOne({ userId, alertId: id })
+
+    if (!existing) {
+      return { success: false, message: 'Alert not found' }
+    }
+
+    const updatePayload = {
+      alertName,
+      threshold,
+      condition,
+      frequency,
+    }
+
+    // Удаляем undefined поля, чтобы не затереть существующие данные пустотой (если partial update)
+    Object.keys(updatePayload).forEach(
+      (key) => (updatePayload as any)[key] === undefined && delete (updatePayload as any)[key]
+    )
+
+    await AlertListModelDB.updateOne({ userId, alertId: id }, { $set: updatePayload })
+    return { success: true, message: 'Alert updated' }
+  } catch (err) {
+    console.error('changeAlert error:', err)
+    return { success: false, message: 'Failed to update alert' }
   }
 }

@@ -221,3 +221,12 @@ export type Alert = {
   condition?: Condition
   frequency?: Frequency
 }
+
+export type AlertUpdate = {
+  condition?: Condition
+  frequency?: Frequency
+  threshold?: number
+  alertName?: string
+  id?: string
+  email?: string
+}
