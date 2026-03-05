@@ -1,5 +1,5 @@
-import { PriceAlert } from '@/components/widgets/PriceAlert'
-import { AlertList } from '@/components/widgets/PriceAlert/AlertList'
+import { AlertList } from '@/components/widgets/Alert/AlertList'
+import { AlertForm } from '@/components/widgets/Alert/Form'
 import { WatchlistNews, WatchlistTable } from '@/components/widgets/Watchlist'
 import { getSessionAction } from '@/lib/actions/auth.actions'
 
@@ -24,7 +24,7 @@ export default async function Wishlist() {
           <WatchlistTable />
         </div>
 
-        <PriceAlert />
+        <AlertForm />
         {/* Right Column (1/3 width on large screens) */}
 
         <div className="watchlist-alerts">

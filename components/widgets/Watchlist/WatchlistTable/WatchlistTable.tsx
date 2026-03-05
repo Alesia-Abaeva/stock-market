@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { getStockDetails, StockDetails } from '@/lib/actions/finnhub.actions'
 import { useWatchlist } from '@/shared/providers/WatchlistProvider'
 
-import { PriceAlert } from '../../PriceAlert'
+import { AlertForm } from '../../Alert/Form'
 import WatchlistButton from '../WatchlistButton/WatchlistButton'
 
 const WatchlistTable = () => {
@@ -91,7 +91,7 @@ const WatchlistTable = () => {
                 <td className="table-cell ">{formatLargeNumber(stock.marketCap)}</td>
                 <td className="table-cell">{stock.peRatio?.toFixed(2) || '-'}</td>
                 <td className="table-cell text-right">
-                  <PriceAlert
+                  <AlertForm
                     alertData={{
                       alertName: stock.name,
                       symbol: stock.symbol,
@@ -103,7 +103,7 @@ const WatchlistTable = () => {
                     <Button variant="outline" size="sm" className=" add-alert ">
                       Add Alert
                     </Button>
-                  </PriceAlert>
+                  </AlertForm>
                 </td>
               </tr>
             ))

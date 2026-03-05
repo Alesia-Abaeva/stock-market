@@ -1,6 +1,6 @@
 'use client'
 
-import React, { use } from 'react'
+import React from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
 
@@ -18,8 +18,8 @@ import { ALERT_TYPE_OPTIONS, CONDITION_OPTIONS, FREQUENCY_OPTIONS } from '@/shar
 import { useUser } from '@/shared/providers/UserProvider'
 import type { Alert, AlertData } from '@/shared/types/global'
 
-import { InputField, SelectField } from '../Forms'
-import { InputWithIcon } from '../Forms/InputWithIcon'
+import { InputField, SelectField } from '../../Forms'
+import { InputWithIcon } from '../../Forms/InputWithIcon'
 
 type AlertModalProps = {
   alertId?: string
@@ -27,9 +27,9 @@ type AlertModalProps = {
   action?: string
 }
 
-type PriceAlertProps = React.PropsWithChildren<AlertModalProps>
+type AlertFormProps = React.PropsWithChildren<AlertModalProps>
 
-const PriceAlert = ({ action, alertData, alertId, children }: PriceAlertProps) => {
+const AlertForm = ({ alertData, alertId, children }: AlertFormProps) => {
   const defaultValues: Alert = {
     symbol: alertData?.symbol || '',
     company: alertData?.company || '',
@@ -167,4 +167,4 @@ const PriceAlert = ({ action, alertData, alertId, children }: PriceAlertProps) =
   )
 }
 
-export default PriceAlert
+export default AlertForm
