@@ -139,7 +139,7 @@ export async function removeAlert(
   }
 }
 
-export async function changeAlert({
+export async function updateAlert({
   alertName,
   threshold,
   condition,

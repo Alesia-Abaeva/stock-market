@@ -184,6 +184,8 @@ export type AlertData = {
   alertName: string
   alertType?: AlertType
   threshold: number
+  condition?: Condition
+  frequency?: Frequency
 }
 
 export type AlertModalProps = {

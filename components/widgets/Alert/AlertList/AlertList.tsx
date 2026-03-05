@@ -12,6 +12,7 @@ import { useUser } from '@/shared/providers/UserProvider'
 
 import { TradingView } from '../../TradingView'
 import { ConfirmModal } from '../ConfirmModal'
+import { AlertForm } from '../Form'
 
 const AlertList = () => {
   const [alerts, setAlerts] = React.useState<AlertItem[]>([])
@@ -62,7 +63,7 @@ const AlertList = () => {
 
   return (
     <section>
-      <div className="alert-list">
+      <div className={`alert-list ${alerts.length === 0 ? 'alert-empty' : ''}`}>
         {alerts.map((alert) => (
           <div key={alert.alertId} className="alert-item relative">
             <div className=" absolute left-0 right-1">
@@ -83,11 +84,17 @@ const AlertList = () => {
                 </p>
               </div>
 
-              <div className="flex flex-col items-end">
+              <div className="flex flex-col items-end gap-1">
                 <div className="alert-actions ">
-                  <Button size="icon-sm" variant="ghost" className="alert-update-btn">
-                    <Edit2 />
-                  </Button>
+                  <AlertForm
+                    alertId={alert.alertId}
+                    alertData={{ ...alert, threshold: alert.threshold }}
+                    action="update"
+                  >
+                    <Button size="icon-sm" variant="ghost" className="alert-update-btn">
+                      <Edit2 />
+                    </Button>
+                  </AlertForm>
                   <ConfirmModal
                     onConfirm={() => handleDelete(alert.alertId, user?.email ?? '')}
                     title="Are you absolutely sure?"
