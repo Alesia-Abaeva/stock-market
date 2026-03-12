@@ -1,13 +1,10 @@
 'use client'
 
 import { Edit2, Trash2 } from 'lucide-react'
-import React from 'react'
-import { toast } from 'sonner'
 
 import { Button } from '@/components/ui'
-import type { AlertItem } from '@/database/models/alert.model'
-import { getAlertListByEmail, removeAlert } from '@/lib/actions/alert.actions'
 import { TECHNICAL_ANALYSIS_WIDGET_CONFIG } from '@/shared/const/trading'
+import { useAlertsContext } from '@/shared/providers/AlertProvider'
 import { useUser } from '@/shared/providers/UserProvider'
 
 import { TradingView } from '../../TradingView'
@@ -15,50 +12,12 @@ import { ConfirmModal } from '../ConfirmModal'
 import { AlertForm } from '../Form'
 
 const AlertList = () => {
-  const [alerts, setAlerts] = React.useState<AlertItem[]>([])
-  const [loading, setLoading] = React.useState<boolean>(false)
+  const { alerts, delete: deleteAlert } = useAlertsContext()
 
   const { user } = useUser()
 
-  React.useEffect(() => {
-    const fetchStockData = async () => {
-      try {
-        const stockList = await getAlertListByEmail(user?.email)
-        setAlerts(stockList)
-      } catch (error) {
-        console.error('Failed to fetch news:', error)
-      }
-    }
-
-    fetchStockData()
-  }, [user?.email])
-
   const handleDelete = async (id: string, email: string) => {
-    if (!id || !email) {
-      toast.error('Something went wrong')
-      return
-    }
-
-    console.log('Deleting alert with id:', id, 'for email:', email)
-
-    setLoading(true)
-    try {
-      const responce = await removeAlert(email, id)
-
-      if (responce.success) {
-        toast.success(responce.message || 'Alert deleted successfully')
-      } else {
-        toast.error(responce.message || 'Failed to delete alert')
-      }
-    } catch (error) {
-      toast.error(
-        error instanceof Error
-          ? error?.message || 'Failed to delete alert'
-          : 'Failed to delete alert'
-      )
-    } finally {
-      setLoading(false)
-    }
+    deleteAlert(id, email)
   }
 
   return (
@@ -113,6 +72,15 @@ const AlertList = () => {
             </div>
           </div>
         ))}
+
+        {alerts.length === 0 && (
+          <div className="flex flex-col items-center gap-4 mt-10">
+            <p className="text-gray-500">No alerts found. Create your first alert!</p>
+            <AlertForm>
+              <Button className="yellow-btn">Create Alert</Button>
+            </AlertForm>
+          </div>
+        )}
       </div>
     </section>
   )

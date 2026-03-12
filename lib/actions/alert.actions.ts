@@ -2,11 +2,9 @@
 
 import { randomUUID } from 'crypto'
 
-import { AlertItem, AlertListModelDB } from '@/database/models/alert.model'
+import { type AlertItem, AlertListModelDB, type AlertRequest } from '@/database/models/alert.model'
 import { connectToDataBase } from '@/database/mongoose'
-import type { Alert, AlertUpdate } from '@/shared/types/global'
-
-type AlertRequest = Alert & { email?: string }
+import type { AlertUpdate } from '@/shared/types/global'
 
 export async function getAlertListByEmail(email?: string): Promise<AlertItem[]> {
   if (!email) return []

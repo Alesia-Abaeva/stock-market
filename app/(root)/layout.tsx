@@ -4,6 +4,7 @@ import React from 'react'
 
 import { Header } from '@/components/layout'
 import { auth } from '@/lib/auth/auth'
+import { AlertProvider } from '@/shared/providers/AlertProvider'
 import { WatchlistProvider } from '@/shared/providers/WatchlistProvider'
 
 export default async function Layout({
@@ -23,10 +24,12 @@ export default async function Layout({
 
   return (
     <WatchlistProvider>
-      <main className="min-h-screen text-gray-400">
-        <Header user={user} />
-        <div className="container py-10">{children}</div>
-      </main>
+      <AlertProvider>
+        <main className="min-h-screen text-gray-400">
+          <Header user={user} />
+          <div className="container py-10">{children}</div>
+        </main>
+      </AlertProvider>
     </WatchlistProvider>
   )
 }

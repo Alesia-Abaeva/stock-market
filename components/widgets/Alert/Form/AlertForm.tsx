@@ -2,7 +2,6 @@
 
 import React from 'react'
 import { useForm } from 'react-hook-form'
-import { toast } from 'sonner'
 
 import { Button } from '@/components/ui'
 import {
@@ -14,8 +13,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import { addAlert, updateAlert } from '@/lib/actions/alert.actions'
+import { AlertAction } from '@/database/models/alert.model'
 import { ALERT_TYPE_OPTIONS, CONDITION_OPTIONS, FREQUENCY_OPTIONS } from '@/shared/const/optionts'
+import { useAlertsContext } from '@/shared/providers/AlertProvider'
 import { useUser } from '@/shared/providers/UserProvider'
 import type { Alert, AlertData } from '@/shared/types/global'
 
@@ -25,7 +25,7 @@ import { InputWithIcon } from '../../Forms/InputWithIcon'
 type AlertModalProps = {
   alertId?: string
   alertData?: AlertData
-  action?: 'update' | 'create'
+  action?: AlertAction
 }
 
 type AlertFormProps = React.PropsWithChildren<AlertModalProps>
@@ -53,6 +53,7 @@ const AlertForm = ({ alertData, alertId, children, action = 'create' }: AlertFor
   } = useForm<Alert>({ defaultValues, mode: 'onBlur' })
 
   const { user } = useUser()
+  const { add } = useAlertsContext()
 
   const onSubmit = async (data: Alert) => {
     const { alertName, symbol, company, threshold, alertType, condition, frequency, id } = data
@@ -68,25 +69,7 @@ const AlertForm = ({ alertData, alertId, children, action = 'create' }: AlertFor
       id: id || `alert-${Date.now()}`,
     }
 
-    try {
-      const result = action === 'create' ? await addAlert(request) : await updateAlert(request)
-
-      if (result.success) {
-        console.log(`${action === 'create' ? 'Add' : 'Update'} alert successful:`, result)
-        toast.success(`${action === 'create' ? 'Alert added' : 'Alert updated'} successfully!`)
-        closeRef.current?.click()
-      } else {
-        toast.error(
-          result.message ||
-            `An error occurred while ${action === 'create' ? 'adding' : 'updating'} the alert. Please try again later.`
-        )
-      }
-    } catch (e) {
-      console.error(e)
-      toast.error('An error occurred while processing the alert. Please try again later.', {
-        description: e instanceof Error ? e.message : 'Unknown error',
-      })
-    }
+    add(request, action, closeRef)
   }
 
   return (
