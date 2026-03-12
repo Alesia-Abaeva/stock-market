@@ -16,7 +16,6 @@ const InputField = ({
   disabled,
   error,
   type = 'text',
-  value,
   ...props
 }: InputFieldProps) => {
   return (
@@ -25,13 +24,13 @@ const InputField = ({
         {label}
       </Label>
       <Input
+        {...props}
         type={type}
         id={name}
+        name={name}
         placeholder={placeholder}
         disabled={disabled}
-        value={value}
         className={cn('form-input', { 'opacity-50 cursor-not-allowed': disabled })}
-        {...props}
       />
       {error && <p className="text-sm text-red-500">{error.message}</p>}
     </div>

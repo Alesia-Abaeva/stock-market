@@ -49,9 +49,6 @@ export default function SignIn() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <InputField
-          label="Email"
-          placeholder="Jojo@jojo.com"
-          error={errors.email}
           {...register('email', {
             required: 'Email name is required',
             pattern: {
@@ -59,6 +56,9 @@ export default function SignIn() {
               message: 'Invalid email address',
             },
           })}
+          label="Email"
+          placeholder="Jojo@jojo.com"
+          error={errors.email}
         />
         <InputField
           label="Password"

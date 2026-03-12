@@ -18,7 +18,6 @@ const InputWithIcon = ({
   disabled,
   error,
   type = 'text',
-  value,
   ...props
 }: InputWithIconProps) => {
   return (
@@ -32,7 +31,6 @@ const InputWithIcon = ({
           id={name}
           placeholder={placeholder}
           disabled={disabled}
-          value={value}
           className="p-0"
           {...props}
         />
