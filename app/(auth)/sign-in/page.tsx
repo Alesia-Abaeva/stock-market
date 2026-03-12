@@ -50,32 +50,28 @@ export default function SignIn() {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <InputField
           label="Email"
-          name="email"
           placeholder="Jojo@jojo.com"
-          register={register}
           error={errors.email}
-          validation={{
+          {...register('email', {
             required: 'Email name is required',
             pattern: {
               value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
               message: 'Invalid email address',
             },
-          }}
+          })}
         />
         <InputField
-          name="password"
           label="Password"
           placeholder="Enter a strong password"
           type="password"
-          register={register}
           error={errors.password}
-          validation={{
+          {...register('password', {
             required: 'Password is required',
             minLength: {
               value: 8,
               message: 'Password must be at least 8 characters',
             },
-          }}
+          })}
         />
 
         <Button type="submit" className="yellow-btn w-full mt-5">

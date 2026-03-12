@@ -64,43 +64,37 @@ export default function SignUp() {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <InputField
           label="Full Name"
-          name="fullName"
           placeholder="Jojo"
-          register={register}
           error={errors.fullName}
-          validation={{
+          {...register('fullName', {
             required: 'Full Name is required',
             minLength: { value: 2, message: 'Name must be at least 2 characters' },
-          }}
+          })}
         />
         <InputField
           label="Email"
-          name="email"
           placeholder="Jojo@jojo.com"
-          register={register}
           error={errors.email}
-          validation={{
+          {...register('email', {
             required: 'Email name is required',
             pattern: {
               value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
               message: 'Invalid email address',
             },
-          }}
+          })}
         />
         <InputField
-          name="password"
           label="Password"
           placeholder="Enter a strong password"
           type="password"
-          register={register}
           error={errors.password}
-          validation={{
+          {...register('password', {
             required: 'Password is required',
             minLength: {
               value: 8,
               message: 'Password must be at least 8 characters',
             },
-          }}
+          })}
         />
         <CountrySelectField
           name="country"

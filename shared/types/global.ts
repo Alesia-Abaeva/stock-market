@@ -5,6 +5,7 @@ import type {
   FieldValues,
   RegisterOptions,
   UseFormRegister,
+  UseFormRegisterReturn,
 } from 'react-hook-form'
 
 export type SignInFormData = {
@@ -35,7 +36,7 @@ export type FormInputProps<T extends FieldValues> = {
   label: string
   placeholder: string
   type?: string
-  register: UseFormRegister<T>
+  register: (name: string, options?: RegisterOptions) => UseFormRegisterReturn
   error?: FieldError
   validation?: RegisterOptions
   disabled?: boolean

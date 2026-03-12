@@ -1,22 +1,26 @@
-import { DollarSign, DollarSignIcon } from 'lucide-react'
-import { FieldValues } from 'react-hook-form'
+import { DollarSign } from 'lucide-react'
+import React from 'react'
+import type { FieldError } from 'react-hook-form'
 
-import { Input, Label } from '@/components/ui'
+import { Label } from '@/components/ui'
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group'
 import { cn } from '@/lib/utils'
-import { FormInputProps } from '@/shared/types/global'
 
-const InputWithIcon = <T extends FieldValues>({
+type InputWithIconProps = React.ComponentProps<'input'> & {
+  label: string
+  error?: FieldError
+}
+
+const InputWithIcon = ({
   label,
   name,
   placeholder,
-  register,
   disabled,
   error,
   type = 'text',
-  validation,
   value,
-}: FormInputProps<T>) => {
+  ...props
+}: InputWithIconProps) => {
   return (
     <div className="space-y-2">
       <Label htmlFor={name} className="form-label">
@@ -30,7 +34,7 @@ const InputWithIcon = <T extends FieldValues>({
           disabled={disabled}
           value={value}
           className="p-0"
-          {...register(name, validation)}
+          {...props}
         />
 
         <InputGroupAddon className="pl-0">
