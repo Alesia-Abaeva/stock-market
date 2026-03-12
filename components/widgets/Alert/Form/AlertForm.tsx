@@ -92,22 +92,19 @@ const AlertForm = ({ alertData, alertId, children, action = 'create' }: AlertFor
           <div className="space-y-3">
             <InputField
               label="Alert Name"
-              name="alertName"
-              register={register}
               error={errors.alertName}
               placeholder={`E.g. Buy ${alertData?.company || ''} if it drops below $${alertData?.threshold || ''}`}
-              validation={{
+              {...register('alertName', {
                 required: 'Alert Name is required',
                 minLength: { value: 2, message: 'Alert Name must be at least 2 characters' },
-              }}
+              })}
             />
             <InputField
               label="Stock identifier"
-              name="company"
               placeholder=""
-              register={register}
               error={errors.company}
               disabled
+              {...register('company')}
             />
             <SelectField
               name="alertType"
@@ -128,10 +125,9 @@ const AlertForm = ({ alertData, alertId, children, action = 'create' }: AlertFor
             />
             <InputWithIcon
               label="Stock identifier"
-              name="threshold"
-              register={register}
               error={errors.threshold}
               placeholder="eg: 140"
+              {...register('threshold')}
             />
             <SelectField
               name="frequency"
