@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { getStockDetails, StockDetails } from '@/lib/actions/finnhub.actions'
 import { useWatchlist } from '@/shared/providers/WatchlistProvider'
 
+import { AlertForm } from '../../Alert/Form'
 import WatchlistButton from '../WatchlistButton/WatchlistButton'
 
 const WatchlistTable = () => {
@@ -30,7 +31,6 @@ const WatchlistTable = () => {
 
   return (
     <div className="w-full overflow-x-auto pb-8">
-      <h3 className="watchlist-title">Watchlist</h3>
       <table className="w-full text-left border-collapse watchlist-table">
         <thead>
           <tr className="table-header-row">
@@ -59,9 +59,11 @@ const WatchlistTable = () => {
               </tr>
             ))
           ) : stocks.length === 0 ? (
-            <tr className="table-row ">
-              <td className="h-20  text-center text-gray-400" colSpan={8}>
-                Watchlist is empty
+            <tr className="table-row h-24">
+              <td className="watchlist-empty-container" colSpan={8}>
+                <p className="text-center text-gray-500">
+                  No stocks in watchlist. Add some to see them here!
+                </p>
               </td>
             </tr>
           ) : (
@@ -89,9 +91,19 @@ const WatchlistTable = () => {
                 <td className="table-cell ">{formatLargeNumber(stock.marketCap)}</td>
                 <td className="table-cell">{stock.peRatio?.toFixed(2) || '-'}</td>
                 <td className="table-cell text-right">
-                  <Button variant="outline" size="sm" className=" add-alert ">
-                    Add Alert
-                  </Button>
+                  <AlertForm
+                    alertData={{
+                      alertName: stock.name,
+                      symbol: stock.symbol,
+                      threshold: stock.price,
+                      company: stock.name,
+                      alertType: 'price',
+                    }}
+                  >
+                    <Button variant="outline" size="sm" className=" add-alert ">
+                      Add Alert
+                    </Button>
+                  </AlertForm>
                 </td>
               </tr>
             ))

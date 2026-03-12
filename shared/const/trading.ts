@@ -199,7 +199,6 @@ export const TECHNICAL_ANALYSIS_WIDGET_CONFIG = (symbol: string) => ({
   isTransparent: 'true',
   locale: 'en',
   width: '100%',
-  height: 400,
   interval: '1h',
   largeChartUrl: '',
 })
@@ -316,3 +315,11 @@ export const WATCHLIST_TABLE_HEADER = [
   'Alert',
   'Action',
 ]
+
+export const STOCK_DATA_CONFIG = (symbol: string) => ({
+  symbol: symbol.toUpperCase(),
+  colorTheme: 'dark',
+  isTransparent: 'true',
+  locale: 'en',
+  width: '100%',
+})

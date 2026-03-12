@@ -18,6 +18,7 @@ const SelectField = ({
   name,
   placeholder,
   error,
+  disabled,
 }: SelectFieldProps) => {
   return (
     <div className="space-y-2">
@@ -32,7 +33,7 @@ const SelectField = ({
           required: required ? `Please select ${label.toLowerCase()}` : false,
         }}
         render={({ field }) => (
-          <Select value={field.value} onValueChange={field.onChange}>
+          <Select value={field.value} onValueChange={field.onChange} disabled={disabled}>
             <SelectTrigger className="select-trigger">
               <SelectValue placeholder={placeholder} />
             </SelectTrigger>

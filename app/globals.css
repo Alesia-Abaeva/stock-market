@@ -57,7 +57,7 @@
   --secondary-foreground: oklch(0.208 0.042 265.755);
   --muted: oklch(0.968 0.007 247.896);
   --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: oklch(0.968 0.007 247.896);
+  --accent: oklch(96.436% 0.00859 16.604);
   --accent-foreground: oklch(0.208 0.042 265.755);
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.929 0.013 255.508);
@@ -83,7 +83,7 @@
   --foreground: oklch(0.984 0.003 247.858);
   --card: oklch(0.208 0.042 265.755);
   --card-foreground: oklch(0.984 0.003 247.858);
-  --popover: oklch(0.208 0.042 265.755);
+  --popover: oklch(25.197% 0.00003 271.152);
   --popover-foreground: oklch(0.984 0.003 247.858);
   --primary: oklch(0.929 0.013 255.508);
   --primary-foreground: oklch(0.208 0.042 265.755);
@@ -91,7 +91,7 @@
   --secondary-foreground: oklch(0.984 0.003 247.858);
   --muted: oklch(0.279 0.041 260.031);
   --muted-foreground: oklch(0.704 0.04 256.788);
-  --accent: oklch(0.279 0.041 260.031);
+  --accent: oklch(28.414% 0.0044 17.013);
   --accent-foreground: oklch(0.984 0.003 247.858);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
@@ -188,7 +188,7 @@
     @apply text-sm font-medium text-gray-400;
   }
   .form-input {
-    @apply h-12 px-3 py-3 text-white text-base placeholder:text-gray-500 border-gray-600 bg-gray-800 rounded-lg focus:!border-yellow-500 focus:ring-0;
+    @apply h-12 px-3 py-1.5 text-white text-base placeholder:text-gray-500 border-gray-600 bg-gray-800 rounded-lg focus:!border-yellow-500 focus:ring-0;
   }
   .select-trigger {
     @apply w-full !h-12 px-3 py-3 text-base border-gray-600 bg-gray-800 text-white rounded-lg focus:!border-yellow-500 focus:ring-0;
@@ -260,7 +260,7 @@
     @apply bg-red-500! hover:bg-red-500! text-gray-900!;
   }
   .watchlist-empty-container {
-    @apply container gap-8 flex-col items-center md:mt-10 p-6 text-center;
+    @apply container gap-8 flex-col items-center md:mt-10 p-6 text-center h-16;
   }
   .watchlist-empty {
     @apply flex flex-col items-center justify-center text-center;
@@ -299,7 +299,7 @@
     @apply h-4 w-4;
   }
   .watchlist-title {
-    @apply text-xl md:text-2xl font-bold text-gray-100 pb-5;
+    @apply text-xl md:text-2xl font-bold text-gray-100;
   }
   .watchlist-table {
     @apply !relative overflow-hidden !w-full bg-gray-800 border !border-gray-600 !rounded-lg;
@@ -375,6 +375,9 @@
   }
   .alert-delete-btn {
     @apply text-gray-400 rounded-full hover:bg-red-600/15 bg-transparent cursor-pointer transition-colors;
+  }
+  .modal {
+    @apply bg-gray-800! border-gray-600;
   }
 }
 
@@ -453,6 +456,20 @@
   border: 1px solid #30333a;
   border-radius: 8px !important;
   overflow: hidden !important;
+}
+
+.tradingview-widget-container-transparent {
+  background-color: transparent !important;
+  height: max-content;
+}
+
+.tradingview-widget-container-transparent iframe {
+  background-color: transparent !important;
+  height: max-content !important;
+}
+
+.tradingview-widget-container-transparent .tv-single-ticker-widget {
+  height: max-content;
 }
 
 /* Custom scrollbar that shows on hover */
