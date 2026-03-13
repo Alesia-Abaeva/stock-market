@@ -20,7 +20,6 @@ import { useUser } from '@/shared/providers/UserProvider'
 import type { Alert, AlertData } from '@/shared/types/global'
 
 import { InputField, SelectField } from '../../Forms'
-import { InputWithIcon } from '../../Forms/InputWithIcon'
 
 type AlertModalProps = {
   alertId?: string
@@ -38,9 +37,8 @@ const AlertForm = ({ alertData, alertId, children, action = 'create' }: AlertFor
     company: alertData?.company || '',
     alertName: alertData?.alertName || '',
     alertType: alertData?.alertType || 'price',
-    threshold: alertData?.threshold || 0,
+    threshold: alertData?.threshold ?? (undefined as unknown as number),
     id: alertId || '',
-    currentPrice: alertData?.threshold || 0,
     condition: alertData?.condition || 'greater',
     frequency: alertData?.frequency || 'daily',
   }
@@ -57,6 +55,8 @@ const AlertForm = ({ alertData, alertId, children, action = 'create' }: AlertFor
 
   const onSubmit = async (data: Alert) => {
     const { alertName, symbol, company, threshold, alertType, condition, frequency, id } = data
+
+    console.log('Form submitted with data:', data)
     const request = {
       email: user?.email,
       alertName,
@@ -75,7 +75,10 @@ const AlertForm = ({ alertData, alertId, children, action = 'create' }: AlertFor
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="alert-dialog ">
+      <DialogContent
+        key={`${alertData?.symbol}-${alertData?.threshold}-${alertId}`}
+        className="alert-dialog "
+      >
         <DialogHeader className="pb-2">
           <DialogTitle className="alert-title ">Price Alert</DialogTitle>
           <DialogDescription
@@ -106,6 +109,19 @@ const AlertForm = ({ alertData, alertId, children, action = 'create' }: AlertFor
               disabled
               {...register('company')}
             />
+            <InputField
+              label="Threshold"
+              placeholder=""
+              error={errors.threshold}
+              withIcon
+              {...register('threshold', {
+                required: 'Threshold is required',
+                // valueAsNumber: true,
+                // min: { value: 0.01, message: 'Threshold must be at least 0.01' },
+                pattern: { value: /^\d+(\.\d{1,2})?$/, message: 'Invalid format' },
+              })}
+            />
+
             <SelectField
               name="alertType"
               label="Alert Type"
@@ -123,12 +139,12 @@ const AlertForm = ({ alertData, alertId, children, action = 'create' }: AlertFor
               options={CONDITION_OPTIONS}
               control={control}
             />
-            <InputWithIcon
-              label="Stock identifier"
+            {/* <InputWithIcon
+              label="Price threshold"
               error={errors.threshold}
               placeholder="eg: 140"
               {...register('threshold')}
-            />
+            /> */}
             <SelectField
               name="frequency"
               label="Frequency"
