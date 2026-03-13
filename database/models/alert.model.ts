@@ -19,6 +19,8 @@ export type AlertItem = {
   condition: Condition
   frequency: Frequency
   alertId: string
+  lastTriggeredAt?: Date | string | null
+  isTriggered?: boolean
 }
 
 // Mongoose Document type for DB layer only
@@ -33,6 +35,8 @@ export interface AlertItemDocument extends Document {
   condition: Condition
   frequency: Frequency
   alertId: string
+  lastTriggeredAt?: Date | null
+  isTriggered?: boolean
 }
 
 const AlertSchema = new Schema<AlertItemDocument>(
@@ -47,6 +51,8 @@ const AlertSchema = new Schema<AlertItemDocument>(
     condition: { type: String, required: true, enum: ['greater', 'less', 'equal'] },
     frequency: { type: String, required: true, enum: ['once', 'daily', 'weekly', 'hourly'] },
     alertId: { type: String, required: true, unique: true },
+    lastTriggeredAt: { type: Date, default: null },
+    isTriggered: { type: Boolean, default: false },
   },
   { timestamps: false }
 )

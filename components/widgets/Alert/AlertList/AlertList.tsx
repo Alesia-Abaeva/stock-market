@@ -56,9 +56,8 @@ const AlertList = () => {
                   </AlertForm>
                   <ConfirmModal
                     onConfirm={() => handleDelete(alert.alertId, user?.email ?? '')}
-                    title="Are you absolutely sure?"
-                    description="This action cannot be undone. This will permanently delete your account from our
-            servers."
+                    title="Are you sure you want to proceed?"
+                    description="This will permanently delete this alert and it cannot be recovered. This action cannot be undone and will remove the alert from our system entirely."
                   >
                     <Button size="icon-sm" variant="ghost" className="alert-delete-btn">
                       <Trash2 />
