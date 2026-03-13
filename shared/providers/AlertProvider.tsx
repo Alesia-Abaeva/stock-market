@@ -32,8 +32,16 @@ const AlertContext = React.createContext<AlertContextType>({
   delete: async () => {},
 })
 
-export const AlertProvider = ({ children }: { children: React.ReactNode }) => {
-  const { user, loading: userLoading } = useUser()
+type AlertProviderProps = {
+  children: React.ReactNode
+  user: {
+    id: string
+    name: string
+    email: string
+  }
+}
+
+export const AlertProvider = ({ children, user }: AlertProviderProps) => {
   const [alerts, setAlerts] = React.useState<AlertItem[]>([])
   const [loading, setLoading] = React.useState(false)
 
@@ -56,10 +64,8 @@ export const AlertProvider = ({ children }: { children: React.ReactNode }) => {
       }
     }
 
-    if (!userLoading) {
-      fetchAlertList()
-    }
-  }, [user, userLoading])
+    fetchAlertList()
+  }, [user])
 
   const add = async (
     data: AlertRequest,

@@ -10,8 +10,6 @@ import {
   removeFromWatchList as removeFromWatchListAction,
 } from '@/lib/actions/watchlist.actions'
 
-import { useUser } from './UserProvider'
-
 type WatchlistContextType = {
   watchlistSymbols: string[]
   loading: boolean
@@ -28,8 +26,16 @@ const WatchlistContext = React.createContext<WatchlistContextType>({
   isInWatchlist: () => false,
 })
 
-export const WatchlistProvider = ({ children }: { children: React.ReactNode }) => {
-  const { user, loading: userLoading } = useUser()
+type WatchlistProviderProps = {
+  children: React.ReactNode
+  user: {
+    id: string
+    name: string
+    email: string
+  }
+}
+
+export const WatchlistProvider = ({ children, user }: WatchlistProviderProps) => {
   const [watchlistSymbols, setWatchlistSymbols] = React.useState<string[]>([])
   const [loading, setLoading] = React.useState(false)
 
@@ -52,10 +58,8 @@ export const WatchlistProvider = ({ children }: { children: React.ReactNode }) =
       }
     }
 
-    if (!userLoading) {
-      fetchWatchlist()
-    }
-  }, [user, userLoading])
+    fetchWatchlist()
+  }, [user])
 
   const addToWatchlist = async (symbol: string, company: string) => {
     if (!user?.email) {
