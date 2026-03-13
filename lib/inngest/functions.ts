@@ -1,9 +1,10 @@
 import { inngest } from '@/lib/inngest/client'
 import { NEWS_SUMMARY_EMAIL_PROMPT, PERSONALIZED_WELCOME_EMAIL_PROMPT } from '@/lib/inngest/prompts'
-import { sendNewsSummaryEmail, sendWelcomeEmail } from '@/lib/nodemailer'
+import { sendNewsSummaryEmail, sendPriceAlertEmail, sendWelcomeEmail } from '@/lib/nodemailer'
 import { MarketNewsArticle, User } from '@/shared/types/global'
 
-import { getNews } from '../actions/finnhub.actions'
+import { getAllAlertsForMonitoring, updateAlertLastTriggered } from '../actions/alert.actions'
+import { getNews, getStockDetails } from '../actions/finnhub.actions'
 import { getAllUserForNewsEmailAction } from '../actions/user.action'
 import { getWatchlistSymbolsByEmail } from '../actions/watchlist.actions'
 import { getFormattedTodayDate } from '../utils'
@@ -138,5 +139,73 @@ export const sendDailyNewsSummary = inngest.createFunction(
     })
 
     return { success: true, message: 'Daily news summary emails sent successfully' }
+  }
+)
+
+export const checkPriceAlerts = inngest.createFunction(
+  { id: 'check-price-alerts' },
+  [
+    { event: 'app/check.price.alerts' },
+    { cron: '*/60 * * * *' }, // Every 15 minutes
+  ],
+  async ({ step }) => {
+    // Step #1: Get all active alerts with user emails
+    const alerts = await step.run('get-all-alerts', getAllAlertsForMonitoring)
+
+    console.log('Fetched alerts for monitoring:', alerts) // Debug log
+
+    if (!alerts || alerts.length === 0) return { success: false, message: 'No alerts to monitor' }
+
+    // Step #2: Get unique symbols and fetch current prices in batch
+    const uniqueSymbols = [...new Set(alerts.map((a) => a.symbol))]
+
+    const stockDetails = await step.run('fetch-current-prices', async () => {
+      return await getStockDetails(uniqueSymbols)
+    })
+
+    // Build a price map: { AAPL: 175.34, ... }
+    const priceMap = Object.fromEntries(stockDetails.map((s) => [s.symbol, s.price]))
+
+    // Step #3: Check each alert against the current price
+    await step.run('evaluate-and-notify', async () => {
+      await Promise.all(
+        alerts.map(async (alert) => {
+          const currentPrice = priceMap[alert.symbol]
+          if (currentPrice === undefined) return
+
+          const { threshold, condition } = alert
+
+          const triggered =
+            condition === 'greater'
+              ? currentPrice > threshold
+              : condition === 'less'
+                ? currentPrice < threshold
+                : currentPrice === threshold
+
+          if (!triggered) return
+
+          await sendPriceAlertEmail({
+            email: alert.email,
+            symbol: alert.symbol,
+            company: alert.company,
+            alertName: alert.alertName,
+            currentPrice,
+            threshold,
+            condition,
+            alertType: alert.alertType,
+          })
+
+          // Mark alert as triggered — for 'once' it won't fire again (cooldown = Infinity)
+          // For all frequencies: set isTriggered flag for UI badge display
+          await updateAlertLastTriggered(alert.alertId)
+          console.log(`Alert triggered for ${alert.email}: ${alert.symbol} @ $${currentPrice}`)
+        })
+      )
+    })
+
+    return {
+      success: true,
+      message: `Checked ${alerts.length} alerts for ${uniqueSymbols.length} symbols`,
+    }
   }
 )

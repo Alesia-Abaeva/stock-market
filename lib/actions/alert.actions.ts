@@ -191,3 +191,74 @@ export async function updateAlert({
     return { success: false, message: 'Failed to update alert' }
   }
 }
+
+// Returns alerts eligible to fire based on their frequency cooldown
+export async function getAllAlertsForMonitoring(): Promise<Array<AlertItem & { email: string }>> {
+  try {
+    const mongoose = await connectToDataBase()
+    const db = mongoose?.connection.db
+    if (!db) throw new Error('MongoDB connection not found')
+
+    const now = new Date()
+
+    // Cooldown thresholds per frequency
+    const cooldownMs: Record<string, number> = {
+      once: Infinity, // always eligible (deleted after trigger)
+      hourly: 60 * 60 * 1000,
+      daily: 24 * 60 * 60 * 1000,
+      weekly: 7 * 24 * 60 * 60 * 1000,
+    }
+
+    const alerts = await AlertListModelDB.find({}).lean()
+
+    // Filter by cooldown
+    const eligible = alerts.filter((alert) => {
+      if (!alert.lastTriggeredAt) return true // never triggered — always eligible
+      const elapsed = now.getTime() - new Date(alert.lastTriggeredAt).getTime()
+      return elapsed >= (cooldownMs[alert.frequency] ?? Infinity)
+    })
+
+    // Enrich with user email
+    // Better Auth stores users with both `id` (string) and `_id` (ObjectId).
+    // The alert's userId was saved as `user.id || String(user._id)`, so we
+    // try matching on `id` first, then fall back to `_id` string comparison.
+    const { ObjectId } = await import('mongodb')
+
+    const enriched = await Promise.all(
+      eligible.map(async (alert) => {
+        try {
+          let user = await db.collection('user').findOne<{ email: string }>({ id: alert.userId })
+
+          if (!user) {
+            // Try matching by _id (ObjectId or string)
+            const maybeObjectId = ObjectId.isValid(alert.userId) ? new ObjectId(alert.userId) : null
+            if (maybeObjectId) {
+              user = await db.collection('user').findOne<{ email: string }>({ _id: maybeObjectId })
+            }
+          }
+
+          return { ...alert, email: user?.email || '' }
+        } catch {
+          return { ...alert, email: '' }
+        }
+      })
+    )
+
+    return JSON.parse(JSON.stringify(enriched.filter((a) => a.email)))
+  } catch (err) {
+    console.error('getAllAlertsForMonitoring error:', err)
+    return []
+  }
+}
+
+export async function updateAlertLastTriggered(alertId: string): Promise<void> {
+  try {
+    await connectToDataBase()
+    await AlertListModelDB.updateOne(
+      { alertId },
+      { $set: { lastTriggeredAt: new Date(), isTriggered: true } }
+    )
+  } catch (err) {
+    console.error('updateAlertLastTriggered error:', err)
+  }
+}

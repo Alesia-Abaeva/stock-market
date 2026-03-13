@@ -17,10 +17,10 @@ import { AlertAction } from '@/database/models/alert.model'
 import { ALERT_TYPE_OPTIONS, CONDITION_OPTIONS, FREQUENCY_OPTIONS } from '@/shared/const/optionts'
 import { useAlertsContext } from '@/shared/providers/AlertProvider'
 import { useUser } from '@/shared/providers/UserProvider'
+import { useWatchlist } from '@/shared/providers/WatchlistProvider'
 import type { Alert, AlertData } from '@/shared/types/global'
 
 import { InputField, SelectField } from '../../Forms'
-import { InputWithIcon } from '../../Forms/InputWithIcon'
 
 type AlertModalProps = {
   alertId?: string
@@ -38,9 +38,8 @@ const AlertForm = ({ alertData, alertId, children, action = 'create' }: AlertFor
     company: alertData?.company || '',
     alertName: alertData?.alertName || '',
     alertType: alertData?.alertType || 'price',
-    threshold: alertData?.threshold || 0,
+    threshold: alertData?.threshold ?? (undefined as unknown as number),
     id: alertId || '',
-    currentPrice: alertData?.threshold || 0,
     condition: alertData?.condition || 'greater',
     frequency: alertData?.frequency || 'daily',
   }
@@ -54,19 +53,26 @@ const AlertForm = ({ alertData, alertId, children, action = 'create' }: AlertFor
 
   const { user } = useUser()
   const { add } = useAlertsContext()
+  const { watchlistSymbols } = useWatchlist()
+
+  const watchlistOptions = watchlistSymbols.map((symbol) => ({
+    label: symbol,
+    value: symbol,
+  }))
 
   const onSubmit = async (data: Alert) => {
     const { alertName, symbol, company, threshold, alertType, condition, frequency, id } = data
+
     const request = {
       email: user?.email,
       alertName,
-      symbol,
+      symbol: symbol.length ? symbol : company,
       company,
       threshold,
       alertType,
       condition,
       frequency,
-      id: id || `alert-${Date.now()}`,
+      id: id.length ? id : `alert-${Date.now()}`,
     }
 
     add(request, action, closeRef)
@@ -75,7 +81,10 @@ const AlertForm = ({ alertData, alertId, children, action = 'create' }: AlertFor
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="alert-dialog ">
+      <DialogContent
+        key={`${alertData?.symbol}-${alertData?.threshold}-${alertId}`}
+        className="alert-dialog "
+      >
         <DialogHeader className="pb-2">
           <DialogTitle className="alert-title ">Price Alert</DialogTitle>
           <DialogDescription
@@ -99,13 +108,37 @@ const AlertForm = ({ alertData, alertId, children, action = 'create' }: AlertFor
                 minLength: { value: 2, message: 'Alert Name must be at least 2 characters' },
               })}
             />
+            {alertData?.company ? (
+              <InputField
+                label="Stock identifier"
+                placeholder=""
+                error={errors.company}
+                disabled
+                {...register('company')}
+              />
+            ) : (
+              <SelectField
+                name="company"
+                label="Stock identifier"
+                placeholder="Select a stock"
+                error={errors.company}
+                options={watchlistOptions}
+                control={control}
+              />
+            )}
             <InputField
-              label="Stock identifier"
+              label="Threshold"
               placeholder=""
-              error={errors.company}
-              disabled
-              {...register('company')}
+              error={errors.threshold}
+              withIcon
+              {...register('threshold', {
+                required: 'Threshold is required',
+                // valueAsNumber: true,
+                // min: { value: 0.01, message: 'Threshold must be at least 0.01' },
+                pattern: { value: /^\d+(\.\d{1,2})?$/, message: 'Invalid format' },
+              })}
             />
+
             <SelectField
               name="alertType"
               label="Alert Type"
@@ -123,12 +156,12 @@ const AlertForm = ({ alertData, alertId, children, action = 'create' }: AlertFor
               options={CONDITION_OPTIONS}
               control={control}
             />
-            <InputWithIcon
-              label="Stock identifier"
+            {/* <InputWithIcon
+              label="Price threshold"
               error={errors.threshold}
               placeholder="eg: 140"
               {...register('threshold')}
-            />
+            /> */}
             <SelectField
               name="frequency"
               label="Frequency"
