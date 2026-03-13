@@ -17,6 +17,7 @@ import { AlertAction } from '@/database/models/alert.model'
 import { ALERT_TYPE_OPTIONS, CONDITION_OPTIONS, FREQUENCY_OPTIONS } from '@/shared/const/optionts'
 import { useAlertsContext } from '@/shared/providers/AlertProvider'
 import { useUser } from '@/shared/providers/UserProvider'
+import { useWatchlist } from '@/shared/providers/WatchlistProvider'
 import type { Alert, AlertData } from '@/shared/types/global'
 
 import { InputField, SelectField } from '../../Forms'
@@ -52,21 +53,26 @@ const AlertForm = ({ alertData, alertId, children, action = 'create' }: AlertFor
 
   const { user } = useUser()
   const { add } = useAlertsContext()
+  const { watchlistSymbols } = useWatchlist()
+
+  const watchlistOptions = watchlistSymbols.map((symbol) => ({
+    label: symbol,
+    value: symbol,
+  }))
 
   const onSubmit = async (data: Alert) => {
     const { alertName, symbol, company, threshold, alertType, condition, frequency, id } = data
 
-    console.log('Form submitted with data:', data)
     const request = {
       email: user?.email,
       alertName,
-      symbol,
+      symbol: symbol.length ? symbol : company,
       company,
       threshold,
       alertType,
       condition,
       frequency,
-      id: id || `alert-${Date.now()}`,
+      id: id.length ? id : `alert-${Date.now()}`,
     }
 
     add(request, action, closeRef)
@@ -102,13 +108,24 @@ const AlertForm = ({ alertData, alertId, children, action = 'create' }: AlertFor
                 minLength: { value: 2, message: 'Alert Name must be at least 2 characters' },
               })}
             />
-            <InputField
-              label="Stock identifier"
-              placeholder=""
-              error={errors.company}
-              disabled
-              {...register('company')}
-            />
+            {alertData?.company ? (
+              <InputField
+                label="Stock identifier"
+                placeholder=""
+                error={errors.company}
+                disabled
+                {...register('company')}
+              />
+            ) : (
+              <SelectField
+                name="company"
+                label="Stock identifier"
+                placeholder="Select a stock"
+                error={errors.company}
+                options={watchlistOptions}
+                control={control}
+              />
+            )}
             <InputField
               label="Threshold"
               placeholder=""
