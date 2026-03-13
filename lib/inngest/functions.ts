@@ -152,6 +152,8 @@ export const checkPriceAlerts = inngest.createFunction(
     // Step #1: Get all active alerts with user emails
     const alerts = await step.run('get-all-alerts', getAllAlertsForMonitoring)
 
+    console.log('Fetched alerts for monitoring:', alerts) // Debug log
+
     if (!alerts || alerts.length === 0) return { success: false, message: 'No alerts to monitor' }
 
     // Step #2: Get unique symbols and fetch current prices in batch

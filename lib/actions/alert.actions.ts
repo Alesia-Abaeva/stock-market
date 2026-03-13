@@ -219,10 +219,24 @@ export async function getAllAlertsForMonitoring(): Promise<Array<AlertItem & { e
     })
 
     // Enrich with user email
+    // Better Auth stores users with both `id` (string) and `_id` (ObjectId).
+    // The alert's userId was saved as `user.id || String(user._id)`, so we
+    // try matching on `id` first, then fall back to `_id` string comparison.
+    const { ObjectId } = await import('mongodb')
+
     const enriched = await Promise.all(
       eligible.map(async (alert) => {
         try {
-          const user = await db.collection('user').findOne<{ email: string }>({ id: alert.userId })
+          let user = await db.collection('user').findOne<{ email: string }>({ id: alert.userId })
+
+          if (!user) {
+            // Try matching by _id (ObjectId or string)
+            const maybeObjectId = ObjectId.isValid(alert.userId) ? new ObjectId(alert.userId) : null
+            if (maybeObjectId) {
+              user = await db.collection('user').findOne<{ email: string }>({ _id: maybeObjectId })
+            }
+          }
+
           return { ...alert, email: user?.email || '' }
         } catch {
           return { ...alert, email: '' }
