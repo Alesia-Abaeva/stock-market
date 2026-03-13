@@ -23,8 +23,8 @@ export default async function Layout({
   const user = { id: session.user.id, name: session.user.name, email: session.user.email }
 
   return (
-    <WatchlistProvider>
-      <AlertProvider>
+    <WatchlistProvider user={user}>
+      <AlertProvider user={user}>
         <main className="min-h-screen text-gray-400">
           <Header user={user} />
           <div className="container py-10">{children}</div>
